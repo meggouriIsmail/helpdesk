@@ -21,8 +21,7 @@ public class Ticket {
     private String description;
     private String title;
     @ManyToOne
-    @JoinColumn(referencedColumnName = "type_id")
-    @JsonBackReference
+    @JoinColumn(name = "type_id")
     private TicketType type;
     private String status;
     private String priority;
@@ -30,7 +29,7 @@ public class Ticket {
     private String user;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "ticket")
     private List<Comment> comments;
-    @OneToMany(mappedBy = "tickets", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticket", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonBackReference
     private Set<Document> documents;
 }

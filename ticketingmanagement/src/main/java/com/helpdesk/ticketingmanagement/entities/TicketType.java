@@ -18,7 +18,4 @@ public class TicketType {
     private Long id;
     private String title;
     private String code;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "type")
-    private List<Ticket> ticket;
 }

@@ -21,7 +21,7 @@ public class Comment {
     private String file;
     private String text;
     @ManyToOne
-    @JoinColumn(referencedColumnName = "ticket_id")
+    @JoinColumn(name = "ticket_id")
     @JsonBackReference
     private Ticket ticket;
 }

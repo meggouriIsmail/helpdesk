@@ -23,15 +23,16 @@ public class Document {
 	
 	@CreationTimestamp
 	private Date creationDate;
-	
+
 	@Lob
+	@Column(name = "data", columnDefinition = "BLOB")
 	private byte[] data;
 	
 	@ManyToOne()
-	@JoinColumn(name = "ticket_id", nullable = false)
+	@JoinColumn(name = "ticket_id")
 	private Ticket ticket;
 	
-	@ManyToOne()
-	@JoinColumn(name = "doctype_id", nullable = false)
-	private DocType type;
+//	@ManyToOne()
+//	@JoinColumn(name = "doctype_id", nullable = false)
+//	private DocType type;
 }

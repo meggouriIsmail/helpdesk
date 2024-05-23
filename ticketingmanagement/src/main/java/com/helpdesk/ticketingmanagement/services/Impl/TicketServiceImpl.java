@@ -7,13 +7,14 @@ import com.helpdesk.ticketingmanagement.repositories.DocTypeRepository;
 import com.helpdesk.ticketingmanagement.repositories.DocumentRepository;
 import com.helpdesk.ticketingmanagement.repositories.TicketRepository;
 import com.helpdesk.ticketingmanagement.services.TicketService;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 
+@Service
 public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
@@ -27,7 +28,20 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public void addTicket(Ticket ticket) {
+    public void addTicket(Ticket ticket, MultipartFile[] files) throws IOException {
+        Set<Document> documents = new HashSet<>();
+
+        for (MultipartFile file : files) {
+            Document document = new Document();
+            document.setDocumentName(StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())));
+            document.setContentType(file.getContentType());
+            document.setData(file.getBytes());
+            document.setSize(file.getSize());
+
+            documents.add(document);
+        }
+
+        ticket.setDocuments(documents);
         ticketRepository.save(ticket);
     }
 
@@ -40,12 +54,6 @@ public class TicketServiceImpl implements TicketService {
     public Ticket getTicketById(Long id) {
         Optional<Ticket> ticket = ticketRepository.findById(id);
         return ticket.orElse(null);
-    }
-
-    @Override
-    public void deleteTicket(Long id) {
-        Optional<Ticket> ticket = ticketRepository.findById(id);
-        ticket.ifPresent(ticketRepository::delete);
     }
 
     @Override
