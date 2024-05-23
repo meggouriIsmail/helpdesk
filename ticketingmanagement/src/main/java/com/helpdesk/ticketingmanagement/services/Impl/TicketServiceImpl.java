@@ -73,10 +73,9 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public void upload(MultipartFile file, Long ticketId, Long typeId) throws Exception {
+    public void upload(MultipartFile file, Long ticketId) throws Exception {
         Document document = new Document();
         Optional<Ticket> ticket = ticketRepository.findById(ticketId);
-        Optional<DocType> type = typeRepository.findById(typeId);
 
         try {
             document.setDocumentName(StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())));
@@ -84,7 +83,6 @@ public class TicketServiceImpl implements TicketService {
             document.setData(file.getBytes());
             document.setSize(file.getSize());
 
-            document.setType(type.orElse(null));
             document.setTicket(ticket.orElse(null));
 
             documentRepository.save(document);

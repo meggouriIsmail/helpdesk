@@ -13,5 +13,5 @@ public interface TicketService {
     Ticket getTicketById(Long id);
     Ticket updateTicket(Long id, Ticket ticket);
 
-    void upload(MultipartFile file, Long ticketId, Long typeId) throws Exception;
+    void upload(MultipartFile file, Long ticketId) throws Exception;
 }
