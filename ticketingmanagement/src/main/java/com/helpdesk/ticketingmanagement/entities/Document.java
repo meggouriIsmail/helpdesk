@@ -28,7 +28,7 @@ public class Document {
 	@Column(name = "data", columnDefinition = "BLOB")
 	private byte[] data;
 	
-	@ManyToOne()
+	@ManyToOne
 	@JoinColumn(name = "ticket_id")
 	private Ticket ticket;
 	

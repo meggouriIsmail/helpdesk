@@ -1,0 +1,10 @@
+{
+  "realm": "helpdesk-realm",
+  "auth-server-url": "http://localhost:8085/auth",
+  "ssl-required": "external",
+  "resource": "help-desk-client",
+  "credentials": {
+    "secret": "KUe28JqHplZaSNg6257h5rQIlJQkRcr0"
+  },
+  "use-resource-role-mappings": true
+}

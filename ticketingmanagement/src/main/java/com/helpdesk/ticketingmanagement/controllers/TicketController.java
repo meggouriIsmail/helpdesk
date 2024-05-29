@@ -2,6 +2,8 @@ package com.helpdesk.ticketingmanagement.controllers;
 
 import com.helpdesk.ticketingmanagement.entities.Ticket;
 import com.helpdesk.ticketingmanagement.services.TicketService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,28 +13,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class TicketController {
-    private TicketService ticketService;
+    private final TicketService ticketService;
 
     public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
     }
 
     @GetMapping("/tickets")
-    public List<Ticket> getAllTickets() {
-        return ticketService.getAllTickets();
+    public ResponseEntity<List<Ticket>> getAllTickets() {
+        return new ResponseEntity<>(ticketService.getAllTickets(), HttpStatus.OK);
     }
     @GetMapping("/tickets/{id}")
-    public Ticket getAllTickets(@PathVariable Long id) {
-        return ticketService.getTicketById(id);
+    public ResponseEntity<Ticket> getTicketById(@PathVariable Long id) {
+        return new ResponseEntity<>(ticketService.getTicketById(id), HttpStatus.OK);
     }
     @PostMapping("/tickets/new")
-    public String addTicket(@RequestParam("files") MultipartFile[] files) throws IOException {
-        try {
-            ticketService.addTicket(new Ticket(), files);
-            return "Ticket and documents uploaded successfully";
-        } catch (IOException e) {
-            return "Failed to upload ticket and documents: " + e.getMessage();
-        }
+    public ResponseEntity<Ticket> addTicket(@RequestBody Ticket ticket) {
+        return new ResponseEntity<>(ticketService.addTicket(ticket), HttpStatus.CREATED);
     }
     @PutMapping("/tickets/{id}")
     public void updateTicket(@PathVariable Long id,

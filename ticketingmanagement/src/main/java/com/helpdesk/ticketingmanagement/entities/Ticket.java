@@ -26,7 +26,20 @@ public class Ticket {
     private String status;
     private String priority;
     private String impact;
-    private String user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
+    private User owner;
+
+    @ManyToOne
+    @JoinColumn(name = "assignedTo")
+    @JsonBackReference
+    private User assignedTo;
+
+    @ManyToOne
+    @JoinColumn(name = "sharedWith")
+    @JsonBackReference
+    private User sharedWith;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "ticket")
     private List<Comment> comments;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticket", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

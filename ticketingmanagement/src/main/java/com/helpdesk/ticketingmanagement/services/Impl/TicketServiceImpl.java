@@ -7,6 +7,7 @@ import com.helpdesk.ticketingmanagement.repositories.DocTypeRepository;
 import com.helpdesk.ticketingmanagement.repositories.DocumentRepository;
 import com.helpdesk.ticketingmanagement.repositories.TicketRepository;
 import com.helpdesk.ticketingmanagement.services.TicketService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,21 +29,8 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public void addTicket(Ticket ticket, MultipartFile[] files) throws IOException {
-        Set<Document> documents = new HashSet<>();
-
-        for (MultipartFile file : files) {
-            Document document = new Document();
-            document.setDocumentName(StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())));
-            document.setContentType(file.getContentType());
-            document.setData(file.getBytes());
-            document.setSize(file.getSize());
-
-            documents.add(document);
-        }
-
-        ticket.setDocuments(documents);
-        ticketRepository.save(ticket);
+    public Ticket addTicket(Ticket ticket) {
+        return ticketRepository.save(ticket);
     }
 
     @Override
@@ -72,25 +60,5 @@ public class TicketServiceImpl implements TicketService {
         return toUpdate;
     }
 
-    @Override
-    public void upload(MultipartFile file, Long ticketId) throws Exception {
-        Document document = new Document();
-        Optional<Ticket> ticket = ticketRepository.findById(ticketId);
 
-        try {
-            document.setDocumentName(StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())));
-            document.setContentType(file.getContentType());
-            document.setData(file.getBytes());
-            document.setSize(file.getSize());
-
-            document.setTicket(ticket.orElse(null));
-
-            documentRepository.save(document);
-
-        } catch (Exception e) {
-            throw new Exception("Could not save File: " + document.getDocumentName() + "   ---- " + e.getMessage());
-        }
-        System.out.println("document " + document.getDocumentName() + " uploaded succesfully");
-
-    }
 }
