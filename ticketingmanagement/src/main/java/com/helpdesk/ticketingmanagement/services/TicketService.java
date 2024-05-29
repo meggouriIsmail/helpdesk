@@ -12,5 +12,5 @@ public interface TicketService {
     List<Ticket> getAllTickets();
     Ticket getTicketById(Long id);
     Ticket updateTicket(Long id, Ticket ticket);
-
+    void updateTicketStatus(Long ticketId, String newStatus);
 }

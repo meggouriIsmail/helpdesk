@@ -39,11 +39,11 @@ public class UserServiceImpl implements UserService {
         user.setEnabled(true);
 
         Set<Role> roles = new HashSet<>();
-        userDto.getRoles().forEach(roleName -> {
-            Role role = roleRepository.findByName(roleName);
+        userDto.getRoles().forEach(rolee -> {
+            Role role = roleRepository.findByName(rolee.getName());
             if (role == null) {
                 role = new Role();
-                role.setName(roleName);
+                role.setName(rolee.getName());
                 roleRepository.save(role);
             }
             roles.add(role);

@@ -3,10 +3,12 @@ package com.helpdesk.ticketingmanagement.services.Impl;
 import com.helpdesk.ticketingmanagement.entities.DocType;
 import com.helpdesk.ticketingmanagement.entities.Document;
 import com.helpdesk.ticketingmanagement.entities.Ticket;
+import com.helpdesk.ticketingmanagement.rabbitmq.TicketStatusProducer;
 import com.helpdesk.ticketingmanagement.repositories.DocTypeRepository;
 import com.helpdesk.ticketingmanagement.repositories.DocumentRepository;
 import com.helpdesk.ticketingmanagement.repositories.TicketRepository;
 import com.helpdesk.ticketingmanagement.services.TicketService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,13 +21,11 @@ import java.util.*;
 public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
-    private final DocTypeRepository typeRepository;
-    private final DocumentRepository documentRepository;
+    private final TicketStatusProducer ticketStatusProducer;
 
-    public TicketServiceImpl(TicketRepository ticketRepository, DocTypeRepository typeRepository, DocumentRepository documentRepository) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketStatusProducer ticketStatusProducer) {
         this.ticketRepository = ticketRepository;
-        this.typeRepository = typeRepository;
-        this.documentRepository = documentRepository;
+        this.ticketStatusProducer = ticketStatusProducer;
     }
 
     @Override
@@ -58,6 +58,26 @@ public class TicketServiceImpl implements TicketService {
             toUpdate.setTitle(ticket.getTitle());
         }
         return toUpdate;
+    }
+
+    @Override
+    @Transactional
+    public void updateTicketStatus(Long ticketId, String newStatus) {
+        Optional<Ticket> optional = ticketRepository.findById(ticketId);
+        Ticket ticket = null;
+        String oldStatus = "";
+        if (optional.isPresent()) {
+            ticket = optional.get();
+            oldStatus = ticket.getStatus();
+            ticket.setStatus(newStatus);
+
+            ticketRepository.save(ticket);
+        }
+
+        // Publish the event if the status changes
+        if (!oldStatus.equals(newStatus)) {
+            ticketStatusProducer.publishTicketStatusChange(ticket);
+        }
     }
 
 
