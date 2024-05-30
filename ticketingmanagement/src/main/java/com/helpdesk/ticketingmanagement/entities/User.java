@@ -1,8 +1,10 @@
 package com.helpdesk.ticketingmanagement.entities;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -13,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,6 +40,7 @@ public class User {
     )
     private Set<Role> roles;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
+    @JsonBackReference
     private List<Ticket> tickets;
 }
 

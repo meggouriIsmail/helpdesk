@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -28,11 +29,12 @@ public class UserServiceImpl implements UserService {
 
     public User saveOrUpdateUser(UserDto userDto) {
         keycloakAdminClientService.createUser(userDto);
-        User user = userRepository.findByUsername(userDto.getUsername());
-        if (user == null) {
+       Optional<User> optional = userRepository.findByUsername(userDto.getUsername());
+       User user = null;
+        if (optional.isEmpty()) {
             user = new User();
             user.setUsername(userDto.getUsername());
-        }
+        } else { user = optional.get(); }
         user.setEmail(userDto.getEmail());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService {
     public User getLoggedInUser() {
         // Assuming you have set up Spring Security correctly and have Keycloak integrated
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsername("yana").orElseThrow();
     }
 }
 

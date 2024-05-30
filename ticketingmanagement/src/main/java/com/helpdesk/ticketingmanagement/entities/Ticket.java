@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Ticket {
+public class Ticket implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String description;
@@ -28,17 +29,14 @@ public class Ticket {
     private String impact;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
     private User owner;
 
     @ManyToOne
     @JoinColumn(name = "assignedTo")
-    @JsonBackReference
     private User assignedTo;
 
     @ManyToOne
     @JoinColumn(name = "sharedWith")
-    @JsonBackReference
     private User sharedWith;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "ticket")
     private List<Comment> comments;
