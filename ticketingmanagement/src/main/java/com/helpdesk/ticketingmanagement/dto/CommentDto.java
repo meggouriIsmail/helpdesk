@@ -1,16 +1,13 @@
 package com.helpdesk.ticketingmanagement.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class CommentDto {
-    private Long id;
     private String content;
-    private UserDto author;
+    private UserNameDto author;
 }

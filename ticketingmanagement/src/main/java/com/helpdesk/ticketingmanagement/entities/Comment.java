@@ -1,14 +1,8 @@
 package com.helpdesk.ticketingmanagement.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor
@@ -16,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Comment {
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String file;
     private String text;
@@ -24,4 +18,6 @@ public class Comment {
     @JoinColumn(name = "ticket_id")
     @JsonBackReference
     private Ticket ticket;
+    @ManyToOne
+    private User author;
 }

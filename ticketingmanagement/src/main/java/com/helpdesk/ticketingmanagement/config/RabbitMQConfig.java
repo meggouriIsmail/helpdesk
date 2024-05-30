@@ -16,6 +16,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue commentQueue() {
+        return new Queue("commentQueue", true);
+    }
+
+    @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }

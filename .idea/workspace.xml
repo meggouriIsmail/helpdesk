@@ -71,8 +71,8 @@
 }</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
-      <recent name="com.helpdesk.ticketingmanagement.dto" />
       <recent name="com.helpdesk.ticketingmanagement.services.Impl" />
+      <recent name="com.helpdesk.ticketingmanagement.dto" />
       <recent name="com.helpdesk.ticketingmanagement.services" />
       <recent name="com.helpdesk.ticketingmanagement.entities" />
     </key>
@@ -80,6 +80,7 @@
       <recent name="D:\II-BDCC\PFE\helpdesk\ticketingmanagement\src\main\java\com\helpdesk\ticketingmanagement" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.helpdesk.ticketingmanagement.config" />
       <recent name="com.helpdesk.ticketingmanagement.dto" />
       <recent name="com.helpdesk.ticketingmanagement.entities" />
     </key>
@@ -128,7 +129,8 @@
       <workItem from="1716669064595" duration="7237000" />
       <workItem from="1716732033331" duration="10113000" />
       <workItem from="1717008696480" duration="3297000" />
-      <workItem from="1717076308432" duration="8883000" />
+      <workItem from="1717076308432" duration="9249000" />
+      <workItem from="1717091931497" duration="5837000" />
     </task>
     <servers />
   </component>
