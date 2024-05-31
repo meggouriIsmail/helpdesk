@@ -25,12 +25,15 @@ public class Document {
 	private Date creationDate;
 
 	@Lob
-	@Column(name = "data", columnDefinition = "BLOB")
+	@Column(name = "data", columnDefinition = "LONGBLOB")
 	private byte[] data;
 	
 	@ManyToOne
 	@JoinColumn(name = "ticket_id")
 	private Ticket ticket;
+	@ManyToOne
+	@JoinColumn(name = "comment_id")
+	private Comment comment;
 	
 //	@ManyToOne()
 //	@JoinColumn(name = "doctype_id", nullable = false)

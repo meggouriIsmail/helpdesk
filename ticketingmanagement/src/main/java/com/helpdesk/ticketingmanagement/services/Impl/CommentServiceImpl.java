@@ -39,7 +39,6 @@ public class CommentServiceImpl implements CommentService {
         User author = optionalUser.get();
         Comment comment = new Comment();
         comment.setTicket(ticket);
-        comment.setFile(commentDto.getContent());
         comment.setText(commentDto.getContent());
         comment.setAuthor(author);
 

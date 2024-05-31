@@ -29,8 +29,8 @@ public class UserServiceImpl implements UserService {
 
     public User saveOrUpdateUser(UserDto userDto) {
         keycloakAdminClientService.createUser(userDto);
-       Optional<User> optional = userRepository.findByUsername(userDto.getUsername());
-       User user = null;
+        Optional<User> optional = userRepository.findByUsername(userDto.getUsername());
+        User user = null;
         if (optional.isEmpty()) {
             user = new User();
             user.setUsername(userDto.getUsername());

@@ -24,10 +24,17 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
-    @PostMapping("/{ticketId}")
-    public ResponseEntity<String> upload(@RequestParam("files") MultipartFile[] files, @PathVariable Long ticketId) throws Exception
+    @PostMapping("/ticket/{ticketId}")
+    public ResponseEntity<String> uploadDocForTicket(@RequestParam("files") MultipartFile[] files, @PathVariable Long ticketId) throws Exception
     {
-        documentService.upload(files, ticketId);
+        documentService.uploadDocForTicket(files, ticketId);
+        return new ResponseEntity<String>("File Uploaded successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/comment/{commentId}")
+    public ResponseEntity<String> uploadDocForComment(@RequestParam("files") MultipartFile[] files, @PathVariable Long commentId) throws Exception
+    {
+        documentService.uploadDocForComment(files, commentId);
         return new ResponseEntity<String>("File Uploaded successfully", HttpStatus.OK);
     }
 

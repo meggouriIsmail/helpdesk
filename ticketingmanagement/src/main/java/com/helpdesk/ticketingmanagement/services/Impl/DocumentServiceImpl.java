@@ -1,7 +1,9 @@
 package com.helpdesk.ticketingmanagement.services.Impl;
 
+import com.helpdesk.ticketingmanagement.entities.Comment;
 import com.helpdesk.ticketingmanagement.entities.Document;
 import com.helpdesk.ticketingmanagement.entities.Ticket;
+import com.helpdesk.ticketingmanagement.repositories.CommentRepository;
 import com.helpdesk.ticketingmanagement.repositories.DocumentRepository;
 import com.helpdesk.ticketingmanagement.repositories.TicketRepository;
 import com.helpdesk.ticketingmanagement.services.DocumentService;
@@ -18,15 +20,31 @@ import java.util.Set;
 public class DocumentServiceImpl implements DocumentService {
     private final TicketRepository ticketRepository;
     private final DocumentRepository documentRepository;
+    private final CommentRepository commentRepository;
 
-    public DocumentServiceImpl(TicketRepository ticketRepository, DocumentRepository documentRepository) {
+    public DocumentServiceImpl(TicketRepository ticketRepository, DocumentRepository documentRepository, CommentRepository commentRepository) {
         this.ticketRepository = ticketRepository;
         this.documentRepository = documentRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
-    public void upload(MultipartFile[] files, Long ticketId) throws Exception {
-        Optional<Ticket> ticket = ticketRepository.findById(ticketId);
+    public void uploadDocForTicket(MultipartFile[] files, Long ticketId) throws Exception {
+        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
+        if (ticketOptional.isPresent()) {
+            upload(files, ticketOptional.get());
+        }
+    }
+
+    @Override
+    public void uploadDocForComment(MultipartFile[] files, Long commentId) throws Exception {
+        Optional<Comment> commentOptional = commentRepository.findById(commentId);
+        if (commentOptional.isPresent()) {
+            upload(files, commentOptional.get());
+        }
+    }
+
+    public void upload(MultipartFile[] files, Object entity) throws Exception {
 
         Set<Document> documents = new HashSet<>();
 
@@ -37,7 +55,12 @@ public class DocumentServiceImpl implements DocumentService {
                 document.setContentType(file.getContentType());
                 document.setData(file.getBytes());
                 document.setSize(file.getSize());
-                document.setTicket(ticket.orElseThrow());
+
+                if (entity instanceof Ticket ticket) {
+                    document.setTicket(ticket);
+                } else if (entity instanceof Comment comment) {
+                    document.setComment(comment);
+                }
 
                 documents.add(document);
             }

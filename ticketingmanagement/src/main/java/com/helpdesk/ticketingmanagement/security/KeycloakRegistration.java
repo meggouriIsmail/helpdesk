@@ -28,7 +28,6 @@ public class KeycloakRegistration {
         // Prepare headers with Access Token
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        System.err.println(accessToken);
         headers.set("Authorization", "Bearer " + accessToken);
 
         String requestBody = "{\n" +
