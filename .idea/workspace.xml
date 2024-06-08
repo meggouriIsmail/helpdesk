@@ -5,18 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="374827f9-98ec-45b2-9e49-465a8bf4ebeb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/faq/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faq/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faq/mvnw" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faq/mvnw.cmd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faq/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faq/src/main/java/com/helpdesk/faq/FaqApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faq/src/main/java/com/helpdesk/faq/entities/FAQ.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faq/src/main/resources/application.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/faq/src/test/java/com/helpdesk/faq/FaqApplicationTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/faq/src/main/java/com/helpdesk/faq/entities/FAQ.java" beforeDir="false" afterPath="$PROJECT_DIR$/faq/src/main/java/com/helpdesk/faq/entities/FAQ.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +17,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
@@ -76,14 +67,18 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;f32f39b4e520333ecb7072093eb64531&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;b543929d965d61a0b1de9fdd7a37e45b&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
-      <recent name="com.helpdesk.ticketingmanagement.services.Impl" />
       <recent name="com.helpdesk.ticketingmanagement.dto" />
+      <recent name="com.helpdesk.ticketingmanagement.enums" />
+      <recent name="com.helpdesk.ticketingmanagement.services.Impl" />
       <recent name="com.helpdesk.ticketingmanagement.services" />
       <recent name="com.helpdesk.ticketingmanagement.entities" />
     </key>
@@ -96,6 +91,13 @@
       <recent name="com.helpdesk.ticketingmanagement.dto" />
       <recent name="com.helpdesk.ticketingmanagement.entities" />
     </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
   </component>
   <component name="RunManager" selected="Spring Boot.TicketingManagementApplication">
     <configuration name="FaqApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
@@ -151,7 +153,10 @@
       <workItem from="1717076308432" duration="9249000" />
       <workItem from="1717091931497" duration="7523000" />
       <workItem from="1717172077678" duration="2743000" />
-      <workItem from="1717251403826" duration="1485000" />
+      <workItem from="1717251403826" duration="1581000" />
+      <workItem from="1717252995471" duration="219000" />
+      <workItem from="1717789298728" duration="321000" />
+      <workItem from="1717854648173" duration="9135000" />
     </task>
     <servers />
   </component>
@@ -160,6 +165,32 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ticketingmanagement/src/main/java/com/helpdesk/ticketingmanagement/rabbitmq/TicketEntityListener.java</url>
+          <line>87</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ticketingmanagement/src/main/java/com/helpdesk/ticketingmanagement/rabbitmq/TicketEntityListener.java</url>
+          <line>72</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ticketingmanagement/src/main/java/com/helpdesk/ticketingmanagement/rabbitmq/TicketEntityListener.java</url>
+          <line>73</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ticketingmanagement/src/main/java/com/helpdesk/ticketingmanagement/rabbitmq/TicketEntityListener.java</url>
+          <line>58</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

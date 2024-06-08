@@ -2,6 +2,8 @@ package com.helpdesk.ticketingmanagement.controllers;
 
 import com.helpdesk.ticketingmanagement.dto.TicketDto;
 import com.helpdesk.ticketingmanagement.dto.TicketStatusDto;
+import com.helpdesk.ticketingmanagement.dto.UpdateAssignedToDto;
+import com.helpdesk.ticketingmanagement.dto.UpdateSharedWithDto;
 import com.helpdesk.ticketingmanagement.entities.Ticket;
 import com.helpdesk.ticketingmanagement.services.TicketService;
 import org.springframework.http.HttpStatus;
@@ -41,5 +43,17 @@ public class TicketController {
     public void updateTicketStatus(@PathVariable Long id,
                              @RequestBody TicketStatusDto ticket) {
         ticketService.updateTicketStatus(id, ticket);
+    }
+
+    @PutMapping("/{ticketId}/sharedWith")
+    public ResponseEntity<Ticket> updateSharedWith(@PathVariable Long ticketId, @RequestBody UpdateSharedWithDto updateSharedWithDto) {
+        Ticket updatedTicket = ticketService.updateSharedWith(ticketId, updateSharedWithDto);
+        return ResponseEntity.ok(updatedTicket);
+    }
+
+    @PutMapping("/{ticketId}/assignedTo")
+    public ResponseEntity<Ticket> updateAssignedTo(@PathVariable Long ticketId, @RequestBody UpdateAssignedToDto updateAssignedToDto) {
+        Ticket updatedTicket = ticketService.updateAssignedTo(ticketId, updateAssignedToDto);
+        return ResponseEntity.ok(updatedTicket);
     }
 }

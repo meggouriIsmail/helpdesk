@@ -1,10 +1,15 @@
 package com.helpdesk.ticketingmanagement.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.helpdesk.ticketingmanagement.enums.TypeActivity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Set;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -14,14 +19,19 @@ import java.util.Set;
 public class Comment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JsonBackReference
-    private Set<Document> documents;
-    private String text;
     @ManyToOne
     @JoinColumn(name = "ticket_id")
     @JsonBackReference
     private Ticket ticket;
     @ManyToOne
     private User author;
+    private Date time;
+    private TypeActivity typeActivity;
+    private String comment;
+    private String status;
+    @ManyToOne
+    private User assignedTo;
+    @ManyToOne
+    private User shared_with;
+
 }

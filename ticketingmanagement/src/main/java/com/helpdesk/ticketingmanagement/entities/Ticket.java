@@ -1,6 +1,7 @@
 package com.helpdesk.ticketingmanagement.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.helpdesk.ticketingmanagement.rabbitmq.TicketEntityListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+//@EntityListeners(TicketEntityListener.class)
 public class Ticket implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,11 +37,9 @@ public class Ticket implements Serializable {
     @JoinColumn(name = "assignedTo")
     private User assignedTo;
 
-    @ManyToOne
+    @OneToMany
     @JoinColumn(name = "sharedWith")
-    private User sharedWith;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "ticket")
-    private List<Comment> comments;
+    private List<User> sharedWith;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticket", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonBackReference
     private Set<Document> documents;
