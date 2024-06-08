@@ -8,6 +8,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/document")
+@EnableMethodSecurity
 public class DocumentController {
 
     private final DocumentService documentService;
@@ -25,20 +28,23 @@ public class DocumentController {
     }
 
     @PostMapping("/ticket/{ticketId}")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<String> uploadDocForTicket(@RequestParam("files") MultipartFile[] files, @PathVariable Long ticketId) throws Exception
     {
         documentService.uploadDocForTicket(files, ticketId);
-        return new ResponseEntity<String>("File Uploaded successfully", HttpStatus.OK);
+        return new ResponseEntity<>("File Uploaded successfully", HttpStatus.OK);
     }
 
     @PostMapping("/comment/{commentId}")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<String> uploadDocForComment(@RequestParam("files") MultipartFile[] files, @PathVariable Long commentId) throws Exception
     {
         documentService.uploadDocForComment(files, commentId);
-        return new ResponseEntity<String>("File Uploaded successfully", HttpStatus.OK);
+        return new ResponseEntity<>("File Uploaded successfully", HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<Resource> downloadDoc(@PathVariable Long id) throws Exception
     {
         Document document = documentService.download(id);
@@ -50,11 +56,5 @@ public class DocumentController {
                         + "\"")
                 .body(new ByteArrayResource(document.getData()));
     }
-
-//    @GetMapping("/get/{id}")
-//    public ResponseEntity<Document> getDoc(@PathVariable Long id)
-//    {
-//        return new ResponseEntity<Document>(documentService.getDoc(id),HttpStatus.OK);
-//    }
 
 }

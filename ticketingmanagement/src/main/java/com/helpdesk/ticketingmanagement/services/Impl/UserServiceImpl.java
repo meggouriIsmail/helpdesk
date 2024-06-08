@@ -1,15 +1,19 @@
 package com.helpdesk.ticketingmanagement.services.Impl;
 import com.helpdesk.ticketingmanagement.dto.UserDto;
+import com.helpdesk.ticketingmanagement.dto.UserReqDto;
 import com.helpdesk.ticketingmanagement.entities.Role;
 import com.helpdesk.ticketingmanagement.entities.User;
 import com.helpdesk.ticketingmanagement.repositories.RoleRepository;
 import com.helpdesk.ticketingmanagement.repositories.UserRepository;
 import com.helpdesk.ticketingmanagement.security.KeycloakRegistration;
 import com.helpdesk.ticketingmanagement.services.UserService;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,10 +31,10 @@ public class UserServiceImpl implements UserService {
         this.keycloakAdminClientService = keycloakAdminClientService;
     }
 
-    public User saveOrUpdateUser(UserDto userDto) {
+    public void saveOrUpdateUser(UserDto userDto) {
         keycloakAdminClientService.createUser(userDto);
         Optional<User> optional = userRepository.findByUsername(userDto.getUsername());
-        User user = null;
+        User user;
         if (optional.isEmpty()) {
             user = new User();
             user.setUsername(userDto.getUsername());
@@ -52,13 +56,57 @@ public class UserServiceImpl implements UserService {
         });
         user.setRoles(roles);
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public User getLoggedInUser() {
-        // Assuming you have set up Spring Security correctly and have Keycloak integrated
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUsername("yana").orElseThrow();
+        String username = getUsernameFromAuthentication();
+        return userRepository.findByUsername(username).orElseThrow();
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public void desactivateUser(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User user;
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+            user.setEnabled(false);
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    public User updateUser(Long userId, UserReqDto userReqDto) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User user;
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+            user.setFirstName(userReqDto.getFirstName());
+            user.setLastName(userReqDto.getLastName());
+            return userRepository.save(user);
+        }
+        return null;
+    }
+
+    private String getUsernameFromAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+
+        if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+            username = jwt.getClaimAsString("preferred_username");
+        }
+
+        return username;
     }
 }
 

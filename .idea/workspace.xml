@@ -85,9 +85,9 @@
       <recent name="D:\II-BDCC\PFE\helpdesk\ticketingmanagement\src\main\java\com\helpdesk\ticketingmanagement" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.helpdesk.ticketingmanagement.dto" />
       <recent name="com.helpdesk.faq.entities" />
       <recent name="com.helpdesk.ticketingmanagement.config" />
-      <recent name="com.helpdesk.ticketingmanagement.dto" />
       <recent name="com.helpdesk.ticketingmanagement.entities" />
     </key>
   </component>
@@ -155,7 +155,8 @@
       <workItem from="1717251403826" duration="1581000" />
       <workItem from="1717252995471" duration="219000" />
       <workItem from="1717789298728" duration="321000" />
-      <workItem from="1717854648173" duration="16790000" />
+      <workItem from="1717854648173" duration="16835000" />
+      <workItem from="1717881083082" duration="8104000" />
     </task>
     <servers />
   </component>
