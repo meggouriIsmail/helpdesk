@@ -1,7 +1,7 @@
 package com.helpdesk.ticketingmanagement.enums;
 
 public enum TypeActivity {
-    COMMENT,
+    ASSIGNED_TO,
     STATUS_CHANGED,
     SHARED_WITH
 }

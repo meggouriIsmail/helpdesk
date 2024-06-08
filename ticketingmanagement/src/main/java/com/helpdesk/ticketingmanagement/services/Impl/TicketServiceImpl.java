@@ -91,72 +91,103 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public void updateTicketStatus(Long ticketId, TicketStatusDto TicketStatusDto) {
+    public void updateTicketStatus(Long ticketId, TicketStatusDto ticketStatusDto) {
         Optional<Ticket> optional = ticketRepository.findById(ticketId);
         Ticket ticket = null;
         String oldStatus = "";
-        String newStatus = TicketStatusDto.getStatus();
+        String newStatus = ticketStatusDto.getStatus();
         if (optional.isPresent()) {
             ticket = optional.get();
             oldStatus = ticket.getStatus();
             ticket.setStatus(newStatus);
+        }
 
+        String username = getUsernameFromAuthentication();
+
+        User user = userRepository.findByUsername(username).orElse(null);
+
+        if (!oldStatus.equals(newStatus)) {
+            assert ticket != null;
+            ticketRepository.save(ticket);
+            createAndSaveComment(ticket, user, "Status changed to " + newStatus + ".", TypeActivity.STATUS_CHANGED);
+        }
+    }
+
+    @Override
+    public Ticket updateSharedWith(Long ticketId, UpdateSharedWithDto updateSharedWithDto) {
+        Optional<Ticket> optional = ticketRepository.findById(ticketId);
+        Ticket ticket = null;
+        List<User> sharedWithUsers = new ArrayList<>();
+        if (optional.isPresent()) {
+            ticket = optional.get();
+            sharedWithUsers = userRepository.findAllById(updateSharedWithDto.getSharedWithUserIds());
+            ticket.setSharedWith(sharedWithUsers);
             ticketRepository.save(ticket);
         }
 
+        String username = getUsernameFromAuthentication();
+
+        User user = userRepository.findByUsername(username).orElse(null);
+
+        Comment comment = new Comment();
+        comment.setTicket(ticket);
+        comment.setAuthor(user);
+        comment.setTime(new Date());
+        comment.setComment("Ticket updated: Shared with updated.");
+        comment.setTypeActivity(TypeActivity.SHARED_WITH);
+        comment.setShared_with(sharedWithUsers);
+        commentRepository.save(comment);
+
+        return ticket;
+    }
+
+    @Override
+    public Ticket updateAssignedTo(Long ticketId, UpdateAssignedToDto updateAssignedToDto) {
+        Optional<Ticket> optional = ticketRepository.findById(ticketId);
+        Ticket ticket = null;
+        if (optional.isPresent()) {
+            ticket = optional.get();
+            Optional<User> assignedToUserOpt = userRepository.findById(updateAssignedToDto.getAssignedToUserId());
+            if (assignedToUserOpt.isPresent()) {
+                ticket.setAssignedTo(assignedToUserOpt.get());
+                ticketRepository.save(ticket);
+            }
+        }
+
+        String username = getUsernameFromAuthentication();
+
+        User user = userRepository.findByUsername(username).orElse(null);
+
+        createAndSaveComment(ticket, user, "Assigned to updated.", TypeActivity.ASSIGNED_TO);
+        return ticket;
+    }
+
+    private void createAndSaveComment(Ticket ticket, User user, String commentText, TypeActivity typeActivity) {
+        Comment comment = new Comment();
+        comment.setTicket(ticket);
+        comment.setAuthor(user);
+        comment.setTime(new Date());
+        comment.setComment("Ticket updated: " + commentText);
+        comment.setTypeActivity(typeActivity);
+
+        if (typeActivity.equals(TypeActivity.STATUS_CHANGED)) {
+            comment.setStatus(ticket.getStatus());
+        } else if (typeActivity.equals(TypeActivity.ASSIGNED_TO)) {
+            comment.setAssignedTo(ticket.getAssignedTo());
+        }
+
+        commentRepository.save(comment);
+    }
+
+    private String getUsernameFromAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = null;
 
         if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
-            jwt = (Jwt) authentication.getPrincipal();
             username = jwt.getClaimAsString("preferred_username");
         }
 
-        User user = userRepository.findByUsername(username).get();
-
-        // Publish the event if the status changes
-        if (!oldStatus.equals(newStatus)) {
-            Comment comment = new Comment();
-            comment.setTicket(ticket);
-            comment.setAuthor(user);
-            comment.setTime(new Date());
-            comment.setComment("Ticket updated: ");
-            comment.setTypeActivity(TypeActivity.STATUS_CHANGED);
-            comment.setStatus(ticket.getStatus());
-            comment.setComment(comment.getComment() + "Status changed to " + ticket.getStatus() + ". ");
-
-            commentRepository.save(comment);
-
-            ticketStatusProducer.publishTicketStatusChange(ticket);
-        }
-    }
-
-    public Ticket updateSharedWith(Long ticketId, UpdateSharedWithDto updateSharedWithDto) {
-        Optional<Ticket> ticketOpt = ticketRepository.findById(ticketId);
-        if (ticketOpt.isPresent()) {
-            Ticket ticket = ticketOpt.get();
-            List<User> sharedWithUsers = userRepository.findAllById(updateSharedWithDto.getSharedWithUserIds());
-            ticket.getSharedWith().addAll(sharedWithUsers);
-            return ticketRepository.save(ticket);
-        } else {
-            throw new RuntimeException("Ticket not found");
-        }
-    }
-
-    public Ticket updateAssignedTo(Long ticketId, UpdateAssignedToDto updateAssignedToDto) {
-        Optional<Ticket> ticketOpt = ticketRepository.findById(ticketId);
-        if (ticketOpt.isPresent()) {
-            Ticket ticket = ticketOpt.get();
-            Optional<User> assignedToUserOpt = userRepository.findById(updateAssignedToDto.getAssignedToUserId());
-            if (assignedToUserOpt.isPresent()) {
-                ticket.setAssignedTo(assignedToUserOpt.get());
-                return ticketRepository.save(ticket);
-            } else {
-                throw new RuntimeException("User not found");
-            }
-        } else {
-            throw new RuntimeException("Ticket not found");
-        }
+        return username;
     }
 
 }

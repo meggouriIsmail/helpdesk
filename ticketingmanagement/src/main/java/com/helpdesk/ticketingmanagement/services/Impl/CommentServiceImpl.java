@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
         //comment.setText(commentDto.getContent());
         comment.setAuthor(author);
 
-        ticket.setComments(List.of(comment));
+//        ticket.setComments(List.of(comment));
 
         commentRepository.save(comment);
         ticketStatusProducer.sendCommentNotification(commentDto);

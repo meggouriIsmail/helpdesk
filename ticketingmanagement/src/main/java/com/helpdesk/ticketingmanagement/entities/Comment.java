@@ -31,7 +31,7 @@ public class Comment {
     private String status;
     @ManyToOne
     private User assignedTo;
-    @ManyToOne
-    private User shared_with;
+    @OneToMany
+    private List<User> shared_with;
 
 }

@@ -39,19 +39,19 @@ public class TicketController {
         ticketService.updateTicket(id, ticket);
     }
 
-    @PutMapping("/tickets/status/{id}")
-    public void updateTicketStatus(@PathVariable Long id,
+    @PutMapping("/tickets/status/{ticketId}")
+    public void updateTicketStatus(@PathVariable Long ticketId,
                              @RequestBody TicketStatusDto ticket) {
-        ticketService.updateTicketStatus(id, ticket);
+        ticketService.updateTicketStatus(ticketId, ticket);
     }
 
-    @PutMapping("/{ticketId}/sharedWith")
+    @PutMapping("/tickets/sharedWith/{ticketId}")
     public ResponseEntity<Ticket> updateSharedWith(@PathVariable Long ticketId, @RequestBody UpdateSharedWithDto updateSharedWithDto) {
         Ticket updatedTicket = ticketService.updateSharedWith(ticketId, updateSharedWithDto);
         return ResponseEntity.ok(updatedTicket);
     }
 
-    @PutMapping("/{ticketId}/assignedTo")
+    @PutMapping("/tickets/assignedTo/{ticketId}")
     public ResponseEntity<Ticket> updateAssignedTo(@PathVariable Long ticketId, @RequestBody UpdateAssignedToDto updateAssignedToDto) {
         Ticket updatedTicket = ticketService.updateAssignedTo(ticketId, updateAssignedToDto);
         return ResponseEntity.ok(updatedTicket);
