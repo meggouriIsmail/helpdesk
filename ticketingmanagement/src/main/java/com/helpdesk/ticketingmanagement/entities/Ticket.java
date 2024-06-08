@@ -1,7 +1,6 @@
 package com.helpdesk.ticketingmanagement.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.helpdesk.ticketingmanagement.rabbitmq.TicketEntityListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

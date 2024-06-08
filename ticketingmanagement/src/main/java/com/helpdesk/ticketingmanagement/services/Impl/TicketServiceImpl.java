@@ -9,13 +9,15 @@ import com.helpdesk.ticketingmanagement.entities.Ticket;
 import com.helpdesk.ticketingmanagement.entities.TicketType;
 import com.helpdesk.ticketingmanagement.entities.User;
 import com.helpdesk.ticketingmanagement.enums.TypeActivity;
-import com.helpdesk.ticketingmanagement.rabbitmq.TicketStatusProducer;
+import com.helpdesk.ticketingmanagement.listeners.TicketStatusProducer;
 import com.helpdesk.ticketingmanagement.repositories.CommentRepository;
 import com.helpdesk.ticketingmanagement.repositories.TicketRepository;
 import com.helpdesk.ticketingmanagement.repositories.TypeRepository;
 import com.helpdesk.ticketingmanagement.repositories.UserRepository;
 import com.helpdesk.ticketingmanagement.services.TicketService;
+import com.helpdesk.ticketingmanagement.websockets.WebSocketService;
 import jakarta.transaction.Transactional;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -31,13 +33,15 @@ public class TicketServiceImpl implements TicketService {
     private final TypeRepository typeRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final RabbitTemplate rabbitTemplate;
 
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketStatusProducer ticketStatusProducer, TypeRepository typeRepository, UserRepository userRepository, CommentRepository commentRepository) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TicketStatusProducer ticketStatusProducer, TypeRepository typeRepository, UserRepository userRepository, CommentRepository commentRepository, RabbitTemplate rabbitTemplate) {
         this.ticketRepository = ticketRepository;
         this.ticketStatusProducer = ticketStatusProducer;
         this.typeRepository = typeRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public void updateTicket(Long id, Ticket ticket) {
         Optional<Ticket> optional = ticketRepository.findById(id);
-        Ticket toUpdate = null;
+        Ticket toUpdate;
         if (optional.isPresent()) {
             toUpdate = optional.get();
             toUpdate.setDescription(ticket.getDescription());
@@ -86,6 +90,7 @@ public class TicketServiceImpl implements TicketService {
             toUpdate.setType(ticket.getType());
             toUpdate.setStatus(ticket.getStatus());
             toUpdate.setTitle(ticket.getTitle());
+            ticketRepository.save(toUpdate);
         }
     }
 
@@ -109,7 +114,8 @@ public class TicketServiceImpl implements TicketService {
         if (!oldStatus.equals(newStatus)) {
             assert ticket != null;
             ticketRepository.save(ticket);
-            createAndSaveComment(ticket, user, "Status changed to " + newStatus + ".", TypeActivity.STATUS_CHANGED);
+            Comment comment = createAndSaveComment(ticket, user, "Status changed to " + newStatus + ".", TypeActivity.STATUS_CHANGED);
+            rabbitTemplate.convertAndSend("commentQueue", comment);
         }
     }
 
@@ -136,7 +142,9 @@ public class TicketServiceImpl implements TicketService {
         comment.setComment("Ticket updated: Shared with updated.");
         comment.setTypeActivity(TypeActivity.SHARED_WITH);
         comment.setShared_with(sharedWithUsers);
-        commentRepository.save(comment);
+        Comment saveComment = commentRepository.save(comment);
+
+        rabbitTemplate.convertAndSend("commentQueue", saveComment);
 
         return ticket;
     }
@@ -158,11 +166,12 @@ public class TicketServiceImpl implements TicketService {
 
         User user = userRepository.findByUsername(username).orElse(null);
 
-        createAndSaveComment(ticket, user, "Assigned to updated.", TypeActivity.ASSIGNED_TO);
+        Comment comment = createAndSaveComment(ticket, user, "Assigned to updated.", TypeActivity.ASSIGNED_TO);
+        rabbitTemplate.convertAndSend("commentQueue", comment);
         return ticket;
     }
 
-    private void createAndSaveComment(Ticket ticket, User user, String commentText, TypeActivity typeActivity) {
+    private Comment createAndSaveComment(Ticket ticket, User user, String commentText, TypeActivity typeActivity) {
         Comment comment = new Comment();
         comment.setTicket(ticket);
         comment.setAuthor(user);
@@ -176,7 +185,7 @@ public class TicketServiceImpl implements TicketService {
             comment.setAssignedTo(ticket.getAssignedTo());
         }
 
-        commentRepository.save(comment);
+        return commentRepository.save(comment);
     }
 
     private String getUsernameFromAuthentication() {

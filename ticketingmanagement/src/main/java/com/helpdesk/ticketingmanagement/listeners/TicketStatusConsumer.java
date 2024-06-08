@@ -1,4 +1,4 @@
-package com.helpdesk.ticketingmanagement.rabbitmq;
+package com.helpdesk.ticketingmanagement.listeners;
 
 import com.helpdesk.ticketingmanagement.entities.Ticket;
 import com.helpdesk.ticketingmanagement.entities.User;

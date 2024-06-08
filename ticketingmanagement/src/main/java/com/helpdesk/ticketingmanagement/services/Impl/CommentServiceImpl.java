@@ -4,14 +4,13 @@ import com.helpdesk.ticketingmanagement.dto.CommentDto;
 import com.helpdesk.ticketingmanagement.entities.Comment;
 import com.helpdesk.ticketingmanagement.entities.Ticket;
 import com.helpdesk.ticketingmanagement.entities.User;
-import com.helpdesk.ticketingmanagement.rabbitmq.TicketStatusProducer;
+import com.helpdesk.ticketingmanagement.listeners.TicketStatusProducer;
 import com.helpdesk.ticketingmanagement.repositories.CommentRepository;
 import com.helpdesk.ticketingmanagement.repositories.TicketRepository;
 import com.helpdesk.ticketingmanagement.repositories.UserRepository;
 import com.helpdesk.ticketingmanagement.services.CommentService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
