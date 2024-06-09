@@ -12,4 +12,9 @@ import lombok.NoArgsConstructor;
 public class UserReqDto {
     private String firstName;
     private String lastName;
+    private String post;
+    private String phoneNumber;
+    private String location;
+    private String aboutMe;
+    private DepartmentDto departmentDto;
 }

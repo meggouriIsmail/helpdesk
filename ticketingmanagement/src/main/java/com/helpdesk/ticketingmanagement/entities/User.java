@@ -32,7 +32,6 @@ public class User implements Serializable {
     private Document document;
     private String status;
     private String post;
-    private String department;
     private String phoneNumber;
     private String location;
     private String aboutMe;
@@ -52,5 +51,7 @@ public class User implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
     @JsonBackReference
     private List<Ticket> tickets;
-}
 
+    @ManyToOne
+    private Department department;
+}

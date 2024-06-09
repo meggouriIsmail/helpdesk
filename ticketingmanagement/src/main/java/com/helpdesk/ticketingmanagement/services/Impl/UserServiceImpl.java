@@ -1,40 +1,43 @@
 package com.helpdesk.ticketingmanagement.services.Impl;
+
 import com.helpdesk.ticketingmanagement.dto.UserDto;
 import com.helpdesk.ticketingmanagement.dto.UserReqDto;
 import com.helpdesk.ticketingmanagement.dto.UserReqPasswordDto;
-import com.helpdesk.ticketingmanagement.entities.Role;
+import com.helpdesk.ticketingmanagement.entities.Department;
 import com.helpdesk.ticketingmanagement.entities.User;
+import com.helpdesk.ticketingmanagement.repositories.DepartmentRepository;
 import com.helpdesk.ticketingmanagement.repositories.RoleRepository;
 import com.helpdesk.ticketingmanagement.repositories.UserRepository;
 import com.helpdesk.ticketingmanagement.security.KeycloakRegistration;
 import com.helpdesk.ticketingmanagement.services.UserService;
+import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final RoleRepository roleRepository;
+    private final DepartmentRepository departmentRepository;
     private final KeycloakRegistration keycloakAdminClientService;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, KeycloakRegistration keycloakAdminClientService) {
+    public UserServiceImpl(UserRepository userRepository, DepartmentRepository departmentRepository, KeycloakRegistration keycloakAdminClientService) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.departmentRepository = departmentRepository;
         this.keycloakAdminClientService = keycloakAdminClientService;
     }
 
     public void saveOrUpdateUser(UserDto userDto) {
         keycloakAdminClientService.createUser(userDto);
         Optional<User> optional = userRepository.findByUsername(userDto.getUsername());
+        Optional<Department> department = departmentRepository.findDepartmentByName(userDto.getDepartmentDto().getName());
+
         User user;
         if (optional.isEmpty()) {
             user = new User();
@@ -43,19 +46,11 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
+        int randomNumber = 10000000 + RandomUtils.nextInt(90000000);
+        String reference = "RU-" + randomNumber;
+        user.setReferenceUser(reference);
         user.setEnabled(true);
-
-        Set<Role> roles = new HashSet<>();
-        userDto.getRoles().forEach(rolee -> {
-            Role role = roleRepository.findByName(rolee.getName());
-            if (role == null) {
-                role = new Role();
-                role.setName(rolee.getName());
-                roleRepository.save(role);
-            }
-            roles.add(role);
-        });
-        user.setRoles(roles);
+        department.ifPresent(user::setDepartment);
 
         userRepository.save(user);
     }
@@ -89,11 +84,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(Long userId, UserReqDto userReqDto) {
         Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<Department> department = departmentRepository.findDepartmentByName(userReqDto.getDepartmentDto().getName());
         User user;
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
             user.setFirstName(userReqDto.getFirstName());
             user.setLastName(userReqDto.getLastName());
+            user.setPhoneNumber(userReqDto.getPhoneNumber());
+            user.setPost(userReqDto.getPost());
+            user.setAboutMe(userReqDto.getAboutMe());
+            user.setLocation(userReqDto.getLocation());
+            department.ifPresent(user::setDepartment);
             return userRepository.save(user);
         }
         return null;

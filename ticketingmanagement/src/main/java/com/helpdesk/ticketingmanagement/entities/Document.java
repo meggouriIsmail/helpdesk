@@ -1,5 +1,6 @@
 package com.helpdesk.ticketingmanagement.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,12 +31,6 @@ public class Document {
 	
 	@ManyToOne
 	@JoinColumn(name = "ticket_id")
+	@JsonBackReference
 	private Ticket ticket;
-	@ManyToOne
-	@JoinColumn(name = "comment_id")
-	private Comment comment;
-	
-//	@ManyToOne()
-//	@JoinColumn(name = "doctype_id", nullable = false)
-//	private DocType type;
 }

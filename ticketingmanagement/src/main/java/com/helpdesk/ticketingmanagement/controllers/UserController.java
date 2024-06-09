@@ -54,13 +54,13 @@ public class UserController {
 
     @PutMapping("/update-password")
     @PreAuthorize("hasAuthority('USER')")
-    public void updateUser(@RequestBody UserReqPasswordDto passwordDto) {
+    public void updatePassword(@RequestBody UserReqPasswordDto passwordDto) {
         userService.updatePassword(passwordDto);
     }
 
     @GetMapping()
-    @PreAuthorize("hasAuthority('HELPDESK')")
-    public ResponseEntity<List<User>> getAllUser() {
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<User>> getAllUsers() {
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 

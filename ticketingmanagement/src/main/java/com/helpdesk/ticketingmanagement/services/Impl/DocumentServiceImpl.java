@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class DocumentServiceImpl implements DocumentService {
@@ -37,8 +34,9 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public void uploadDocForComment(MultipartFile[] files, Long commentId) throws Exception {
+    public void uploadDocForUser(MultipartFile file, Long commentId) throws Exception {
         Optional<Comment> commentOptional = commentRepository.findById(commentId);
+        MultipartFile[] files = new MultipartFile[]{file};
         if (commentOptional.isPresent()) {
             upload(files, commentOptional.get());
         }
@@ -58,8 +56,6 @@ public class DocumentServiceImpl implements DocumentService {
 
                 if (entity instanceof Ticket ticket) {
                     document.setTicket(ticket);
-                } else if (entity instanceof Comment comment) {
-                    document.setComment(comment);
                 }
 
                 documents.add(document);

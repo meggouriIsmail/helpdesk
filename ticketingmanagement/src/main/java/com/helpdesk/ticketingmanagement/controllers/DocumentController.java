@@ -35,11 +35,11 @@ public class DocumentController {
         return new ResponseEntity<>("File Uploaded successfully", HttpStatus.OK);
     }
 
-    @PostMapping("/comment/{commentId}")
+    @PostMapping("/profile/{userId}")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<String> uploadDocForComment(@RequestParam("files") MultipartFile[] files, @PathVariable Long commentId) throws Exception
+    public ResponseEntity<String> uploadDocForUser(@RequestParam("files") MultipartFile file, @PathVariable Long userId) throws Exception
     {
-        documentService.uploadDocForComment(files, commentId);
+        documentService.uploadDocForUser(file, userId);
         return new ResponseEntity<>("File Uploaded successfully", HttpStatus.OK);
     }
 

@@ -15,8 +15,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="Enum" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -75,9 +75,9 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.helpdesk.ticketingmanagement.services.Impl" />
       <recent name="com.helpdesk.ticketingmanagement.dto" />
       <recent name="com.helpdesk.ticketingmanagement.enums" />
-      <recent name="com.helpdesk.ticketingmanagement.services.Impl" />
       <recent name="com.helpdesk.ticketingmanagement.services" />
       <recent name="com.helpdesk.ticketingmanagement.entities" />
     </key>
@@ -157,7 +157,7 @@
       <workItem from="1717789298728" duration="321000" />
       <workItem from="1717854648173" duration="16835000" />
       <workItem from="1717881083082" duration="8521000" />
-      <workItem from="1717947987981" duration="10806000" />
+      <workItem from="1717947987981" duration="16385000" />
     </task>
     <servers />
   </component>

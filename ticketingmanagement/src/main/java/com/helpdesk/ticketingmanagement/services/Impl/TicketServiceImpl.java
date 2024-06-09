@@ -14,6 +14,7 @@ import com.helpdesk.ticketingmanagement.repositories.UserRepository;
 import com.helpdesk.ticketingmanagement.services.TicketService;
 import com.helpdesk.ticketingmanagement.websockets.WebSocketService;
 import jakarta.transaction.Transactional;
+import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,7 +47,9 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket = new Ticket();
         ticket.setDescription(ticketDto.getDescription());
         ticket.setTitle(ticketDto.getTitle());
-        ticket.setReference("TO-DO");
+        int randomNumber = 10000000 + RandomUtils.nextInt(90000000);
+        String reference = "RT-" + randomNumber;
+        ticket.setReference(reference);
 
         Optional<TicketType> optionalTicketType = typeRepository.getTicketTypeByCode(ticketDto.getType().getCode());
         Optional<User> owner = userRepository.findByUsername(getUsernameFromAuthentication());
@@ -57,7 +60,7 @@ public class TicketServiceImpl implements TicketService {
             optional.ifPresent(sharedWith::add);
         });
 
-        ticket.setType(optionalTicketType.orElseThrow());
+        optionalTicketType.ifPresent(ticket::setType);
         ticket.setSharedWith(sharedWith);
         ticket.setOwner(owner.orElseThrow());
 
