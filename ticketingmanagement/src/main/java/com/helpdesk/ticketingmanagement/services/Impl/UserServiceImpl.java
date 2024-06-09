@@ -1,6 +1,7 @@
 package com.helpdesk.ticketingmanagement.services.Impl;
 import com.helpdesk.ticketingmanagement.dto.UserDto;
 import com.helpdesk.ticketingmanagement.dto.UserReqDto;
+import com.helpdesk.ticketingmanagement.dto.UserReqPasswordDto;
 import com.helpdesk.ticketingmanagement.entities.Role;
 import com.helpdesk.ticketingmanagement.entities.User;
 import com.helpdesk.ticketingmanagement.repositories.RoleRepository;
@@ -98,6 +99,12 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public void updatePassword(UserReqPasswordDto password) {
+        String id = getIdFromAuthentication();
+        keycloakAdminClientService.updatePassword(password.getPassword(), id);
+    }
+
     private String getUsernameFromAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = null;
@@ -107,6 +114,16 @@ public class UserServiceImpl implements UserService {
         }
 
         return username;
+    }
+    private String getIdFromAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String id = null;
+
+        if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+            id = jwt.getSubject();
+        }
+
+        return id;
     }
 }
 

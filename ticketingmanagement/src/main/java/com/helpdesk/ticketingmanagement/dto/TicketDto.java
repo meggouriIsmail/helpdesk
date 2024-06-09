@@ -16,10 +16,7 @@ public class TicketDto {
     private String description;
     private String title;
     private TicketTypeDto type;
-    private String status;
     private String priority;
     private String impact;
-    private UserNameDto owner;
-    private UserNameDto assignedTo;
-    private UserNameDto sharedWith;
+    private List<UserNameDto> sharedWith;
 }

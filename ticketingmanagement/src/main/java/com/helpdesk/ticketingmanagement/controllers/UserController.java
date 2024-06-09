@@ -2,6 +2,7 @@ package com.helpdesk.ticketingmanagement.controllers;
 
 import com.helpdesk.ticketingmanagement.dto.UserDto;
 import com.helpdesk.ticketingmanagement.dto.UserReqDto;
+import com.helpdesk.ticketingmanagement.dto.UserReqPasswordDto;
 import com.helpdesk.ticketingmanagement.entities.User;
 import com.helpdesk.ticketingmanagement.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,12 @@ public class UserController {
         return userService.updateUser(userId, userReqDto);
     }
 
+    @PutMapping("/update-password")
+    @PreAuthorize("hasAuthority('USER')")
+    public void updateUser(@RequestBody UserReqPasswordDto passwordDto) {
+        userService.updatePassword(passwordDto);
+    }
+
     @GetMapping()
     @PreAuthorize("hasAuthority('HELPDESK')")
     public ResponseEntity<List<User>> getAllUser() {
@@ -58,7 +65,7 @@ public class UserController {
     }
 
     @GetMapping("/auth")
-    @PreAuthorize("hasAuthority('HELPDESK')")
+    @PreAuthorize("hasAuthority('USER')")
     public Authentication authentication(Authentication authentication) {
         return authentication;
     }

@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -16,10 +18,10 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-//@EntityListeners(TicketEntityListener.class)
 public class Ticket implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String reference;
     private String description;
     private String title;
     @ManyToOne
@@ -27,7 +29,10 @@ public class Ticket implements Serializable {
     private TicketType type;
     private String status;
     private String priority;
-    private String impact;
+    private boolean isResolved;
+    private boolean isFavorite;
+    @CreationTimestamp
+    private Date createdTime;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User owner;

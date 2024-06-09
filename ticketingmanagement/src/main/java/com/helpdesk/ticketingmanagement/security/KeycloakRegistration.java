@@ -22,7 +22,6 @@ public class KeycloakRegistration {
     }
 
     public void createUser(UserDto userDto) {
-        // Obtain Access Token
         String accessToken = getAccessToken();
 
         // Prepare headers with Access Token
@@ -61,6 +60,33 @@ public class KeycloakRegistration {
         } else {
             throw new RuntimeException("Failed to register this user");
         }
+    }
+
+    public void updatePassword(String password, String id) {
+        String accessToken = getAccessToken();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        String requestBody = "{\n" +
+                "   \"temporary\": false,\n" +
+                "   \"type\": \"password\",\n" +
+                "   \"value\": \"" + password + "\"\n" +
+                "}";
+
+        HttpEntity<Object> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        restTemplate.put(
+                "http://localhost:8085/admin/realms/helpdesk-realm/users/"+ id + "/reset-password",
+                requestEntity
+        );
+
+//        if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+//            System.out.println("Success");
+//        } else {
+//            throw new RuntimeException("Failed to update password");
+//        }
     }
 
     private String getAccessToken() {

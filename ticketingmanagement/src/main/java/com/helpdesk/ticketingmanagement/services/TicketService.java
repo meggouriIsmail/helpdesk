@@ -15,6 +15,9 @@ public interface TicketService {
 
     Ticket getTicketById(Long id);
 
+    Ticket getTicketByUserAndId(String username, Long id);
+    List<Ticket> getTicketsByUserAndId(String username);
+
     void updateTicket(Long id, Ticket ticket);
 
     void updateTicketStatus(Long ticketId, TicketStatusDto ticketStatusDto);

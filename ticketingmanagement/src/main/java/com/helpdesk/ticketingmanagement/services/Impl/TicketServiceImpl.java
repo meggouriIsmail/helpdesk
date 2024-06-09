@@ -1,9 +1,6 @@
 package com.helpdesk.ticketingmanagement.services.Impl;
 
-import com.helpdesk.ticketingmanagement.dto.TicketDto;
-import com.helpdesk.ticketingmanagement.dto.TicketStatusDto;
-import com.helpdesk.ticketingmanagement.dto.UpdateAssignedToDto;
-import com.helpdesk.ticketingmanagement.dto.UpdateSharedWithDto;
+import com.helpdesk.ticketingmanagement.dto.*;
 import com.helpdesk.ticketingmanagement.entities.Comment;
 import com.helpdesk.ticketingmanagement.entities.Ticket;
 import com.helpdesk.ticketingmanagement.entities.TicketType;
@@ -49,20 +46,23 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket = new Ticket();
         ticket.setDescription(ticketDto.getDescription());
         ticket.setTitle(ticketDto.getTitle());
+        ticket.setReference("TO-DO");
 
         Optional<TicketType> optionalTicketType = typeRepository.getTicketTypeByCode(ticketDto.getType().getCode());
-        Optional<User> assignedTo = userRepository.findByUsername(ticketDto.getAssignedTo().getUsername());
-        Optional<User> owner = userRepository.findByUsername(ticketDto.getOwner().getUsername());
-        Optional<User> sharedWith = userRepository.findByUsername(ticketDto.getSharedWith().getUsername());
+        Optional<User> owner = userRepository.findByUsername(getUsernameFromAuthentication());
+
+        List<User> sharedWith = new ArrayList<>();
+        ticketDto.getSharedWith().forEach(userNameDto -> {
+            Optional<User> optional = userRepository.findByUsername(userNameDto.getUsername());
+            optional.ifPresent(sharedWith::add);
+        });
 
         ticket.setType(optionalTicketType.orElseThrow());
-        ticket.setAssignedTo(assignedTo.orElseThrow());
-        ticket.setSharedWith(List.of(sharedWith.orElseThrow()));
+        ticket.setSharedWith(sharedWith);
         ticket.setOwner(owner.orElseThrow());
 
-        ticket.setStatus(ticketDto.getStatus());
+        ticket.setStatus("OPEN");
         ticket.setPriority(ticketDto.getPriority());
-        ticket.setImpact(ticketDto.getImpact());
 
         return ticketRepository.save(ticket);
     }
@@ -79,13 +79,22 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public Ticket getTicketByUserAndId(String username, Long id) {
+        return ticketRepository.findByOwnerUsernameAndId(username, id);
+    }
+
+    @Override
+    public List<Ticket> getTicketsByUserAndId(String username) {
+        return ticketRepository.findAllByOwnerUsername(username);
+    }
+
+    @Override
     public void updateTicket(Long id, Ticket ticket) {
         Optional<Ticket> optional = ticketRepository.findById(id);
         Ticket toUpdate;
         if (optional.isPresent()) {
             toUpdate = optional.get();
             toUpdate.setDescription(ticket.getDescription());
-            toUpdate.setImpact(ticket.getImpact());
             toUpdate.setPriority(ticket.getPriority());
             toUpdate.setType(ticket.getType());
             toUpdate.setStatus(ticket.getStatus());
@@ -140,7 +149,7 @@ public class TicketServiceImpl implements TicketService {
         comment.setAuthor(user);
         comment.setTime(new Date());
         comment.setComment("Ticket updated: Shared with updated.");
-        comment.setTypeActivity(TypeActivity.SHARED_WITH);
+        comment.setTypeActivity(TypeActivity.valueOf(TypeActivity.SHARED_WITH.value));
         comment.setShared_with(sharedWithUsers);
         Comment saveComment = commentRepository.save(comment);
 
@@ -177,7 +186,7 @@ public class TicketServiceImpl implements TicketService {
         comment.setAuthor(user);
         comment.setTime(new Date());
         comment.setComment("Ticket updated: " + commentText);
-        comment.setTypeActivity(typeActivity);
+        comment.setTypeActivity(TypeActivity.valueOf(typeActivity.value));
 
         if (typeActivity.equals(TypeActivity.STATUS_CHANGED)) {
             comment.setStatus(ticket.getStatus());

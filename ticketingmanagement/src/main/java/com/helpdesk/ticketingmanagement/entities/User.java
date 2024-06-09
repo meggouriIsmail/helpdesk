@@ -21,16 +21,21 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false, unique = true)
     private String username;
-
     @Column(nullable = false)
     private String email;
-
     private String firstName;
     private String lastName;
-
+    private String referenceUser;
+    @OneToOne
+    private Document document;
+    private String status;
+    private String post;
+    private String department;
+    private String phoneNumber;
+    private String location;
+    private String aboutMe;
     @CreationTimestamp
     private Date joinDate;
 
