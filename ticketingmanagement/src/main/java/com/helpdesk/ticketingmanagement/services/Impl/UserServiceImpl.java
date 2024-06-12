@@ -3,6 +3,7 @@ package com.helpdesk.ticketingmanagement.services.Impl;
 import com.helpdesk.ticketingmanagement.dto.UserDto;
 import com.helpdesk.ticketingmanagement.dto.UserReqDto;
 import com.helpdesk.ticketingmanagement.dto.UserReqPasswordDto;
+import com.helpdesk.ticketingmanagement.dto.UserResDto;
 import com.helpdesk.ticketingmanagement.entities.Department;
 import com.helpdesk.ticketingmanagement.entities.User;
 import com.helpdesk.ticketingmanagement.repositories.DepartmentRepository;
@@ -55,9 +56,21 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    public User getLoggedInUser() {
+    public UserResDto getLoggedInUser() {
         String username = getUsernameFromAuthentication();
-        return userRepository.findByUsername(username).orElseThrow();
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        User user;
+        UserResDto userRes = new UserResDto();
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+            userRes.setEmail(user.getEmail());
+            userRes.setUsername(user.getUsername());
+            userRes.setLastName(user.getLastName());
+            userRes.setFirstName(user.getFirstName());
+            userRes.setDepartment(user.getDepartment());
+            userRes.setDocId(user.getDocument().getId());
+        }
+        return userRes;
     }
 
     @Override

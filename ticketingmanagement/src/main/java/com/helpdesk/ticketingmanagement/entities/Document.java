@@ -33,4 +33,7 @@ public class Document {
 	@JoinColumn(name = "ticket_id")
 	@JsonBackReference
 	private Ticket ticket;
+
+	@OneToOne
+	private User user;
 }

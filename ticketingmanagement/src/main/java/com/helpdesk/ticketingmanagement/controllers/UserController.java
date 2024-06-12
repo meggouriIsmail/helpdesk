@@ -3,6 +3,7 @@ package com.helpdesk.ticketingmanagement.controllers;
 import com.helpdesk.ticketingmanagement.dto.UserDto;
 import com.helpdesk.ticketingmanagement.dto.UserReqDto;
 import com.helpdesk.ticketingmanagement.dto.UserReqPasswordDto;
+import com.helpdesk.ticketingmanagement.dto.UserResDto;
 import com.helpdesk.ticketingmanagement.entities.User;
 import com.helpdesk.ticketingmanagement.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class UserController {
 
     @GetMapping("/loggedIn")
     @PreAuthorize("hasAuthority('USER')")
-    public User getLoggedInUser() {
+    public UserResDto getLoggedInUser() {
         return userService.getLoggedInUser();
     }
 

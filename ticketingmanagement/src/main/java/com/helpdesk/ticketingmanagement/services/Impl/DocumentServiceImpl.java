@@ -3,9 +3,11 @@ package com.helpdesk.ticketingmanagement.services.Impl;
 import com.helpdesk.ticketingmanagement.entities.Comment;
 import com.helpdesk.ticketingmanagement.entities.Document;
 import com.helpdesk.ticketingmanagement.entities.Ticket;
+import com.helpdesk.ticketingmanagement.entities.User;
 import com.helpdesk.ticketingmanagement.repositories.CommentRepository;
 import com.helpdesk.ticketingmanagement.repositories.DocumentRepository;
 import com.helpdesk.ticketingmanagement.repositories.TicketRepository;
+import com.helpdesk.ticketingmanagement.repositories.UserRepository;
 import com.helpdesk.ticketingmanagement.services.DocumentService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -17,12 +19,12 @@ import java.util.*;
 public class DocumentServiceImpl implements DocumentService {
     private final TicketRepository ticketRepository;
     private final DocumentRepository documentRepository;
-    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
-    public DocumentServiceImpl(TicketRepository ticketRepository, DocumentRepository documentRepository, CommentRepository commentRepository) {
+    public DocumentServiceImpl(TicketRepository ticketRepository, DocumentRepository documentRepository, UserRepository userRepository) {
         this.ticketRepository = ticketRepository;
         this.documentRepository = documentRepository;
-        this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -34,11 +36,11 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public void uploadDocForUser(MultipartFile file, Long commentId) throws Exception {
-        Optional<Comment> commentOptional = commentRepository.findById(commentId);
+    public void uploadDocForUser(MultipartFile file, Long userId) throws Exception {
+        Optional<User> userOptional = userRepository.findById(userId);
         MultipartFile[] files = new MultipartFile[]{file};
-        if (commentOptional.isPresent()) {
-            upload(files, commentOptional.get());
+        if (userOptional.isPresent()) {
+            upload(files, userOptional.get());
         }
     }
 
@@ -56,12 +58,14 @@ public class DocumentServiceImpl implements DocumentService {
 
                 if (entity instanceof Ticket ticket) {
                     document.setTicket(ticket);
+                    documentRepository.save(document);
+                } else if (entity instanceof User user) {
+                    document.setUser(user);
+                    documentRepository.save(document);
+                    user.setDocument(document);
+                    userRepository.save(user);
                 }
-
-                documents.add(document);
             }
-
-            documentRepository.saveAll(documents);
 
         } catch (Exception e) {
             throw new Exception("Could not save files :" + e.getMessage());
