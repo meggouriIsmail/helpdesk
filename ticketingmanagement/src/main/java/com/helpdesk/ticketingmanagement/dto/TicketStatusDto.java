@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketStatusDto {
-    private String title;
+    private String explication;
     private String status;
 }

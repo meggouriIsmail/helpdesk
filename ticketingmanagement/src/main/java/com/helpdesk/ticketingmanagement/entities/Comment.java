@@ -26,7 +26,7 @@ public class Comment {
     @ManyToOne
     private User author;
     private Date time;
-    private TypeActivity typeActivity;
+    private String typeActivity;
     private String comment;
     private String status;
     @ManyToOne

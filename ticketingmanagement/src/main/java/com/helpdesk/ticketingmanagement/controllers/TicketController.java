@@ -1,9 +1,6 @@
 package com.helpdesk.ticketingmanagement.controllers;
 
-import com.helpdesk.ticketingmanagement.dto.TicketDto;
-import com.helpdesk.ticketingmanagement.dto.TicketStatusDto;
-import com.helpdesk.ticketingmanagement.dto.UpdateAssignedToDto;
-import com.helpdesk.ticketingmanagement.dto.UpdateSharedWithDto;
+import com.helpdesk.ticketingmanagement.dto.*;
 import com.helpdesk.ticketingmanagement.entities.Ticket;
 import com.helpdesk.ticketingmanagement.services.TicketService;
 import org.springframework.http.HttpStatus;
@@ -22,6 +19,18 @@ public class TicketController {
 
     public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
+    }
+
+    @GetMapping("/user-tickets/")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<Ticket>> getAllTicketsByOwner(@RequestBody UserNameDto userNameDto) {
+        return new ResponseEntity<>(ticketService.getTicketsByUserAndId(userNameDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/user-ticket/{id}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<Ticket> getTicketByOwner(@RequestBody UserNameDto userNameDto, @PathVariable Long id) {
+        return new ResponseEntity<>(ticketService.getTicketByUserAndId(userNameDto, id), HttpStatus.OK);
     }
 
     @GetMapping("/tickets")

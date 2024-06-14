@@ -1,9 +1,6 @@
 package com.helpdesk.ticketingmanagement.services;
 
-import com.helpdesk.ticketingmanagement.dto.TicketDto;
-import com.helpdesk.ticketingmanagement.dto.TicketStatusDto;
-import com.helpdesk.ticketingmanagement.dto.UpdateAssignedToDto;
-import com.helpdesk.ticketingmanagement.dto.UpdateSharedWithDto;
+import com.helpdesk.ticketingmanagement.dto.*;
 import com.helpdesk.ticketingmanagement.entities.Ticket;
 
 import java.util.List;
@@ -15,8 +12,8 @@ public interface TicketService {
 
     Ticket getTicketById(Long id);
 
-    Ticket getTicketByUserAndId(String username, Long id);
-    List<Ticket> getTicketsByUserAndId(String username);
+    Ticket getTicketByUserAndId(UserNameDto userNameDto, Long id);
+    List<Ticket> getTicketsByUserAndId(UserNameDto userNameDto);
 
     void updateTicket(Long id, Ticket ticket);
 

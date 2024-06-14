@@ -27,15 +27,13 @@ import java.util.*;
 public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
-    private final TicketStatusProducer ticketStatusProducer;
     private final TypeRepository typeRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final RabbitTemplate rabbitTemplate;
 
-    public TicketServiceImpl(TicketRepository ticketRepository, TicketStatusProducer ticketStatusProducer, TypeRepository typeRepository, UserRepository userRepository, CommentRepository commentRepository, RabbitTemplate rabbitTemplate) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TypeRepository typeRepository, UserRepository userRepository, CommentRepository commentRepository, RabbitTemplate rabbitTemplate) {
         this.ticketRepository = ticketRepository;
-        this.ticketStatusProducer = ticketStatusProducer;
         this.typeRepository = typeRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
@@ -64,7 +62,7 @@ public class TicketServiceImpl implements TicketService {
         ticket.setSharedWith(sharedWith);
         ticket.setOwner(owner.orElseThrow());
 
-        ticket.setStatus("OPEN");
+        ticket.setStatus("Open");
         ticket.setPriority(ticketDto.getPriority());
 
         return ticketRepository.save(ticket);
@@ -82,13 +80,13 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public Ticket getTicketByUserAndId(String username, Long id) {
-        return ticketRepository.findByOwnerUsernameAndId(username, id);
+    public Ticket getTicketByUserAndId(UserNameDto userNameDto, Long id) {
+        return ticketRepository.findByOwnerUsernameAndId(userNameDto.getUsername(), id);
     }
 
     @Override
-    public List<Ticket> getTicketsByUserAndId(String username) {
-        return ticketRepository.findAllByOwnerUsername(username);
+    public List<Ticket> getTicketsByUserAndId(UserNameDto userNameDto) {
+        return ticketRepository.findAllByOwnerUsername(userNameDto.getUsername());
     }
 
     @Override
@@ -152,7 +150,7 @@ public class TicketServiceImpl implements TicketService {
         comment.setAuthor(user);
         comment.setTime(new Date());
         comment.setComment("Ticket updated: Shared with updated.");
-        comment.setTypeActivity(TypeActivity.valueOf(TypeActivity.SHARED_WITH.value));
+        comment.setTypeActivity(TypeActivity.SHARED_WITH.value);
         comment.setShared_with(sharedWithUsers);
         Comment saveComment = commentRepository.save(comment);
 
@@ -189,7 +187,7 @@ public class TicketServiceImpl implements TicketService {
         comment.setAuthor(user);
         comment.setTime(new Date());
         comment.setComment("Ticket updated: " + commentText);
-        comment.setTypeActivity(TypeActivity.valueOf(typeActivity.value));
+        comment.setTypeActivity(typeActivity.value);
 
         if (typeActivity.equals(TypeActivity.STATUS_CHANGED)) {
             comment.setStatus(ticket.getStatus());

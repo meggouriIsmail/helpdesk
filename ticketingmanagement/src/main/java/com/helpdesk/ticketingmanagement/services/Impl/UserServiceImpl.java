@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -63,12 +64,23 @@ public class UserServiceImpl implements UserService {
         UserResDto userRes = new UserResDto();
         if (userOptional.isPresent()) {
             user = userOptional.get();
+            userRes.setId(user.getId());
             userRes.setEmail(user.getEmail());
             userRes.setUsername(user.getUsername());
             userRes.setLastName(user.getLastName());
             userRes.setFirstName(user.getFirstName());
             userRes.setDepartment(user.getDepartment());
-            userRes.setDocId(user.getDocument().getId());
+            userRes.setReferenceUser(user.getReferenceUser());
+            userRes.setEnabled(user.isEnabled());
+            userRes.setPost(user.getPost());
+            userRes.setLocation(user.getLocation());
+            userRes.setAboutMe(user.getAboutMe());
+            userRes.setJoinDate(user.getJoinDate());
+            userRes.setStatus(user.getStatus());
+            userRes.setPhoneNumber(user.getPhoneNumber());
+            if (!Objects.isNull(user.getDocument())) {
+                userRes.setDocId(user.getDocument().getId());
+            }
         }
         return userRes;
     }

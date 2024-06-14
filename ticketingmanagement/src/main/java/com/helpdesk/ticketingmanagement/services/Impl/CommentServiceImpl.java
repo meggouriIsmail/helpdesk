@@ -44,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setTicket(ticket);
         comment.setComment(commentDto.getComment());
         comment.setAuthor(author);
-        comment.setTypeActivity(TypeActivity.COMMENT);
+        comment.setTypeActivity(TypeActivity.COMMENT.value);
 
         Comment commentSaved = commentRepository.save(comment);
         rabbitTemplate.convertAndSend("commentQueue", commentSaved);
