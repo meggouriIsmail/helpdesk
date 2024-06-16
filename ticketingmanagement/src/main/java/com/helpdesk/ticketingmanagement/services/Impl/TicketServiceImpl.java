@@ -1,18 +1,13 @@
 package com.helpdesk.ticketingmanagement.services.Impl;
 
 import com.helpdesk.ticketingmanagement.dto.*;
-import com.helpdesk.ticketingmanagement.entities.Comment;
-import com.helpdesk.ticketingmanagement.entities.Ticket;
-import com.helpdesk.ticketingmanagement.entities.TicketType;
-import com.helpdesk.ticketingmanagement.entities.User;
+import com.helpdesk.ticketingmanagement.entities.*;
 import com.helpdesk.ticketingmanagement.enums.TypeActivity;
-import com.helpdesk.ticketingmanagement.listeners.TicketStatusProducer;
 import com.helpdesk.ticketingmanagement.repositories.CommentRepository;
 import com.helpdesk.ticketingmanagement.repositories.TicketRepository;
 import com.helpdesk.ticketingmanagement.repositories.TypeRepository;
 import com.helpdesk.ticketingmanagement.repositories.UserRepository;
 import com.helpdesk.ticketingmanagement.services.TicketService;
-import com.helpdesk.ticketingmanagement.websockets.WebSocketService;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -22,6 +17,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -41,10 +37,11 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public Ticket addTicket(TicketDto ticketDto) {
+    public TicketResDto addTicket(TicketDto ticketDto) {
         Ticket ticket = new Ticket();
         ticket.setDescription(ticketDto.getDescription());
         ticket.setTitle(ticketDto.getTitle());
+        ticket.setIsResolved("undefined");
         int randomNumber = 10000000 + RandomUtils.nextInt(90000000);
         String reference = "RT-" + randomNumber;
         ticket.setReference(reference);
@@ -65,28 +62,61 @@ public class TicketServiceImpl implements TicketService {
         ticket.setStatus("Open");
         ticket.setPriority(ticketDto.getPriority());
 
-        return ticketRepository.save(ticket);
+        return getTicketResDto(ticketRepository.save(ticket));
     }
 
     @Override
-    public List<Ticket> getAllTickets() {
-        return ticketRepository.findAll();
+    public List<TicketResDto> getAllTickets() {
+        return ticketRepository.findAll().stream().map(TicketServiceImpl::getTicketResDto).collect(Collectors.toList());
     }
 
     @Override
-    public Ticket getTicketById(Long id) {
-        Optional<Ticket> ticket = ticketRepository.findById(id);
-        return ticket.orElse(null);
+    public TicketResDto getTicketById(Long id) {
+        Optional<Ticket> ticketOptional = ticketRepository.findById(id);
+        if (ticketOptional.isPresent()) {
+            Ticket ticket = ticketOptional.get();
+            return getTicketResDto(ticket);
+        }
+        return null;
+    }
+
+    private static TicketResDto getTicketResDto(Ticket ticket) {
+        TicketResDto ticketResDto = TicketResDto.builder()
+                .id(ticket.getId())
+                .description(ticket.getDescription())
+                .isResolved(ticket.getIsResolved())
+                .createdTime(ticket.getCreatedTime())
+                .status(ticket.getStatus())
+                .priority(ticket.getPriority())
+                .title(ticket.getTitle())
+                .reference(ticket.getReference())
+                .isFavorite(ticket.isFavorite())
+                .type(ticket.getType())
+                .ownerId(ticket.getOwner().getId())
+                .build();
+        if (!Objects.isNull(ticket.getAssignedTo())) {
+            ticketResDto.setAssignedToId(ticket.getAssignedTo().getId());
+        }
+        if (!ticket.getSharedWith().isEmpty()) {
+            List<Long> sharedWithIds = ticket.getSharedWith().stream().map(User::getId).toList();
+            ticketResDto.setSharedWithIds(sharedWithIds);
+        }
+        if (!ticket.getDocuments().isEmpty()) {
+            Set<Long> docsIds = ticket.getDocuments().stream().map(Document::getId).collect(Collectors.toSet());
+            ticketResDto.setDocumentIds(docsIds);
+        }
+
+        return ticketResDto;
     }
 
     @Override
-    public Ticket getTicketByUserAndId(UserNameDto userNameDto, Long id) {
-        return ticketRepository.findByOwnerUsernameAndId(userNameDto.getUsername(), id);
+    public TicketResDto getTicketByUserAndId(UserNameDto userNameDto, Long id) {
+        return getTicketResDto(ticketRepository.findByOwnerUsernameAndId(userNameDto.getUsername(), id));
     }
 
     @Override
-    public List<Ticket> getTicketsByUserAndId(UserNameDto userNameDto) {
-        return ticketRepository.findAllByOwnerUsername(userNameDto.getUsername());
+    public List<TicketResDto> getTicketsByUserAndId(UserNameDto userNameDto) {
+        return ticketRepository.findAllByOwnerUsername(userNameDto.getUsername()).stream().map(TicketServiceImpl::getTicketResDto).toList();
     }
 
     @Override
@@ -130,7 +160,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public Ticket updateSharedWith(Long ticketId, UpdateSharedWithDto updateSharedWithDto) {
+    public TicketResDto updateSharedWith(Long ticketId, UpdateSharedWithDto updateSharedWithDto) {
         Optional<Ticket> optional = ticketRepository.findById(ticketId);
         Ticket ticket = null;
         List<User> sharedWithUsers = new ArrayList<>();
@@ -156,11 +186,11 @@ public class TicketServiceImpl implements TicketService {
 
         rabbitTemplate.convertAndSend("commentQueue", saveComment);
 
-        return ticket;
+        return getTicketResDto(ticket);
     }
 
     @Override
-    public Ticket updateAssignedTo(Long ticketId, UpdateAssignedToDto updateAssignedToDto) {
+    public TicketResDto updateAssignedTo(Long ticketId, UpdateAssignedToDto updateAssignedToDto) {
         Optional<Ticket> optional = ticketRepository.findById(ticketId);
         Ticket ticket = null;
         if (optional.isPresent()) {
@@ -178,7 +208,19 @@ public class TicketServiceImpl implements TicketService {
 
         Comment comment = createAndSaveComment(ticket, user, "Assigned to updated.", TypeActivity.ASSIGNED_TO);
         rabbitTemplate.convertAndSend("commentQueue", comment);
-        return ticket;
+        assert ticket != null;
+        return getTicketResDto(ticket);
+    }
+
+    @Override
+    public TicketResDto updateIsFavourite(Long ticketId, IsFavoriteDto isFavoriteDto) {
+        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
+        if (ticketOptional.isPresent()) {
+            Ticket ticket = ticketOptional.get();
+            ticket.setFavorite(isFavoriteDto.isFavorite);
+            return getTicketResDto(ticket);
+        }
+        return null;
     }
 
     private Comment createAndSaveComment(Ticket ticket, User user, String commentText, TypeActivity typeActivity) {

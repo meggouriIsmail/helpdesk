@@ -23,29 +23,29 @@ public class TicketController {
 
     @GetMapping("/user-tickets/")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<List<Ticket>> getAllTicketsByOwner(@RequestBody UserNameDto userNameDto) {
+    public ResponseEntity<List<TicketResDto>> getAllTicketsByOwner(@RequestBody UserNameDto userNameDto) {
         return new ResponseEntity<>(ticketService.getTicketsByUserAndId(userNameDto), HttpStatus.OK);
     }
 
     @GetMapping("/user-ticket/{id}")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<Ticket> getTicketByOwner(@RequestBody UserNameDto userNameDto, @PathVariable Long id) {
+    public ResponseEntity<TicketResDto> getTicketByOwner(@RequestBody UserNameDto userNameDto, @PathVariable Long id) {
         return new ResponseEntity<>(ticketService.getTicketByUserAndId(userNameDto, id), HttpStatus.OK);
     }
 
     @GetMapping("/tickets")
     @PreAuthorize("hasAuthority('HELPDESK')")
-    public ResponseEntity<List<Ticket>> getAllTickets() {
+    public ResponseEntity<List<TicketResDto>> getAllTickets() {
         return new ResponseEntity<>(ticketService.getAllTickets(), HttpStatus.OK);
     }
     @GetMapping("/tickets/{id}")
     @PreAuthorize("hasAuthority('HELPDESK')")
-    public ResponseEntity<Ticket> getTicketById(@PathVariable Long id) {
+    public ResponseEntity<TicketResDto> getTicketById(@PathVariable Long id) {
         return new ResponseEntity<>(ticketService.getTicketById(id), HttpStatus.OK);
     }
     @PostMapping("/tickets/new")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<Ticket> addTicket(@RequestBody TicketDto ticket) {
+    public ResponseEntity<TicketResDto> addTicket(@RequestBody TicketDto ticket) {
         return new ResponseEntity<>(ticketService.addTicket(ticket), HttpStatus.CREATED);
     }
     @PutMapping("/tickets/{id}")
@@ -64,15 +64,22 @@ public class TicketController {
 
     @PutMapping("/tickets/sharedWith/{ticketId}")
     @PreAuthorize("hasAuthority('HELPDESK')")
-    public ResponseEntity<Ticket> updateSharedWith(@PathVariable Long ticketId, @RequestBody UpdateSharedWithDto updateSharedWithDto) {
-        Ticket updatedTicket = ticketService.updateSharedWith(ticketId, updateSharedWithDto);
+    public ResponseEntity<TicketResDto> updateSharedWith(@PathVariable Long ticketId, @RequestBody UpdateSharedWithDto updateSharedWithDto) {
+        TicketResDto updatedTicket = ticketService.updateSharedWith(ticketId, updateSharedWithDto);
         return ResponseEntity.ok(updatedTicket);
     }
 
     @PutMapping("/tickets/assignedTo/{ticketId}")
     @PreAuthorize("hasAuthority('HELPDESK')")
-    public ResponseEntity<Ticket> updateAssignedTo(@PathVariable Long ticketId, @RequestBody UpdateAssignedToDto updateAssignedToDto) {
-        Ticket updatedTicket = ticketService.updateAssignedTo(ticketId, updateAssignedToDto);
+    public ResponseEntity<TicketResDto> updateAssignedTo(@PathVariable Long ticketId, @RequestBody UpdateAssignedToDto updateAssignedToDto) {
+        TicketResDto updatedTicket = ticketService.updateAssignedTo(ticketId, updateAssignedToDto);
+        return ResponseEntity.ok(updatedTicket);
+    }
+
+    @PutMapping("/tickets/isFavorite/{ticketId}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<TicketResDto> updateAssignedTo(@PathVariable Long ticketId, @RequestBody IsFavoriteDto isFavoriteDto) {
+        TicketResDto updatedTicket = ticketService.updateIsFavourite(ticketId, isFavoriteDto);
         return ResponseEntity.ok(updatedTicket);
     }
 }

@@ -29,7 +29,7 @@ public class Ticket implements Serializable {
     private TicketType type;
     private String status;
     private String priority;
-    private boolean isResolved;
+    private String isResolved;
     private boolean isFavorite;
     @CreationTimestamp
     private Date createdTime;

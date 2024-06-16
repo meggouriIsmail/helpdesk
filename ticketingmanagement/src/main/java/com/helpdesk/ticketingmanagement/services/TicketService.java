@@ -6,20 +6,21 @@ import com.helpdesk.ticketingmanagement.entities.Ticket;
 import java.util.List;
 
 public interface TicketService {
-    Ticket addTicket(TicketDto ticket);
+    TicketResDto addTicket(TicketDto ticket);
 
-    List<Ticket> getAllTickets();
+    List<TicketResDto> getAllTickets();
 
-    Ticket getTicketById(Long id);
+    TicketResDto getTicketById(Long id);
 
-    Ticket getTicketByUserAndId(UserNameDto userNameDto, Long id);
-    List<Ticket> getTicketsByUserAndId(UserNameDto userNameDto);
+    TicketResDto getTicketByUserAndId(UserNameDto userNameDto, Long id);
+    List<TicketResDto> getTicketsByUserAndId(UserNameDto userNameDto);
 
     void updateTicket(Long id, Ticket ticket);
 
     void updateTicketStatus(Long ticketId, TicketStatusDto ticketStatusDto);
 
-    Ticket updateSharedWith(Long ticketId, UpdateSharedWithDto updateSharedWithDto);
+    TicketResDto updateSharedWith(Long ticketId, UpdateSharedWithDto updateSharedWithDto);
 
-    Ticket updateAssignedTo(Long ticketId, UpdateAssignedToDto updateAssignedToDto);
+    TicketResDto updateAssignedTo(Long ticketId, UpdateAssignedToDto updateAssignedToDto);
+    TicketResDto updateIsFavourite(Long ticketId, IsFavoriteDto isFavoriteDto);
 }
