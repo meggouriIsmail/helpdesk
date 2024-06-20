@@ -12,8 +12,8 @@ public interface TicketService {
 
     TicketResDto getTicketById(Long id);
 
-    TicketResDto getTicketByUserAndId(UserNameDto userNameDto, Long id);
-    List<TicketResDto> getTicketsByUserAndId(UserNameDto userNameDto);
+    TicketResDto getTicketByUserAndId(String username, Long id);
+    List<TicketResDto> getTicketsByUser(String username);
 
     void updateTicket(Long id, Ticket ticket);
 

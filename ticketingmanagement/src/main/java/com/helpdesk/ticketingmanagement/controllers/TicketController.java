@@ -21,16 +21,16 @@ public class TicketController {
         this.ticketService = ticketService;
     }
 
-    @GetMapping("/user-tickets/")
+    @GetMapping("/user-tickets/{username}/")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<List<TicketResDto>> getAllTicketsByOwner(@RequestBody UserNameDto userNameDto) {
-        return new ResponseEntity<>(ticketService.getTicketsByUserAndId(userNameDto), HttpStatus.OK);
+    public ResponseEntity<List<TicketResDto>> getAllTicketsByOwner(@PathVariable String username) {
+        return new ResponseEntity<>(ticketService.getTicketsByUser(username), HttpStatus.OK);
     }
 
-    @GetMapping("/user-ticket/{id}")
+    @GetMapping("/user-ticket/{username}/{id}")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<TicketResDto> getTicketByOwner(@RequestBody UserNameDto userNameDto, @PathVariable Long id) {
-        return new ResponseEntity<>(ticketService.getTicketByUserAndId(userNameDto, id), HttpStatus.OK);
+    public ResponseEntity<TicketResDto> getTicketByOwner(@PathVariable String username, @PathVariable Long id) {
+        return new ResponseEntity<>(ticketService.getTicketByUserAndId(username, id), HttpStatus.OK);
     }
 
     @GetMapping("/tickets")

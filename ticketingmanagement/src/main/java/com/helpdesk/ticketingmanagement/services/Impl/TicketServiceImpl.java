@@ -92,16 +92,31 @@ public class TicketServiceImpl implements TicketService {
                 .reference(ticket.getReference())
                 .isFavorite(ticket.isFavorite())
                 .type(ticket.getType())
-                .ownerId(ticket.getOwner().getId())
+                .owner(UserTicketResDto.builder()
+                        .id(ticket.getOwner().getId())
+                        .username(ticket.getOwner().getUsername())
+                        .docId(ticket.getOwner().getDocument() != null ? ticket.getOwner().getDocument().getId() : null)
+                        .build())
                 .build();
         if (!Objects.isNull(ticket.getAssignedTo())) {
-            ticketResDto.setAssignedToId(ticket.getAssignedTo().getId());
+            ticketResDto.setAssignedTo(UserTicketResDto.builder()
+                    .id(ticket.getAssignedTo().getId())
+                    .username(ticket.getAssignedTo().getUsername())
+                    .docId(ticket.getAssignedTo().getDocument() != null ? ticket.getAssignedTo().getDocument().getId() : null)
+                    .build());
         }
-        if (!ticket.getSharedWith().isEmpty()) {
-            List<Long> sharedWithIds = ticket.getSharedWith().stream().map(User::getId).toList();
-            ticketResDto.setSharedWithIds(sharedWithIds);
+        if (!Objects.isNull(ticket.getSharedWith()) && !ticket.getSharedWith().isEmpty()) {
+            List<UserTicketResDto> sharedWith = new ArrayList<>();
+            ticket.getSharedWith().forEach(user -> {
+                sharedWith.add(UserTicketResDto.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .docId(user.getDocument() != null ? user.getDocument().getId() : null)
+                        .build());
+            });
+            ticketResDto.setSharedWith(sharedWith);
         }
-        if (!ticket.getDocuments().isEmpty()) {
+        if (!Objects.isNull(ticket.getDocuments()) && !ticket.getDocuments().isEmpty()) {
             Set<Long> docsIds = ticket.getDocuments().stream().map(Document::getId).collect(Collectors.toSet());
             ticketResDto.setDocumentIds(docsIds);
         }
@@ -110,13 +125,13 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public TicketResDto getTicketByUserAndId(UserNameDto userNameDto, Long id) {
-        return getTicketResDto(ticketRepository.findByOwnerUsernameAndId(userNameDto.getUsername(), id));
+    public TicketResDto getTicketByUserAndId(String username, Long id) {
+        return getTicketResDto(ticketRepository.findByOwnerUsernameAndId(username, id));
     }
 
     @Override
-    public List<TicketResDto> getTicketsByUserAndId(UserNameDto userNameDto) {
-        return ticketRepository.findAllByOwnerUsername(userNameDto.getUsername()).stream().map(TicketServiceImpl::getTicketResDto).toList();
+    public List<TicketResDto> getTicketsByUser(String username) {
+        return ticketRepository.findAllByOwnerUsername(username).stream().map(TicketServiceImpl::getTicketResDto).toList();
     }
 
     @Override

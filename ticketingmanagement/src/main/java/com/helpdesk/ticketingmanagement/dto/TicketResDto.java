@@ -23,8 +23,8 @@ public class TicketResDto {
     private String isResolved;
     private boolean isFavorite;
     private Date createdTime;
-    private Long ownerId;
-    private Long assignedToId;
-    private List<Long> sharedWithIds;
+    private UserTicketResDto owner;
+    private UserTicketResDto assignedTo;
+    private List<UserTicketResDto> sharedWith;
     private Set<Long> documentIds;
 }
