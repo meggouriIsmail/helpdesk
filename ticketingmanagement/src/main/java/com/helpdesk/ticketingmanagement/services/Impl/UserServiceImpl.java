@@ -1,9 +1,6 @@
 package com.helpdesk.ticketingmanagement.services.Impl;
 
-import com.helpdesk.ticketingmanagement.dto.UserDto;
-import com.helpdesk.ticketingmanagement.dto.UserReqDto;
-import com.helpdesk.ticketingmanagement.dto.UserReqPasswordDto;
-import com.helpdesk.ticketingmanagement.dto.UserResDto;
+import com.helpdesk.ticketingmanagement.dto.*;
 import com.helpdesk.ticketingmanagement.entities.Department;
 import com.helpdesk.ticketingmanagement.entities.User;
 import com.helpdesk.ticketingmanagement.repositories.DepartmentRepository;
@@ -96,6 +93,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserRes> getAllUsers() {
+        return userRepository.findAll().stream().map(this::getUserRes).toList();
+    }
+
+    @Override
     public void desactivateUser(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         User user;
@@ -129,6 +131,21 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(UserReqPasswordDto password) {
         String id = getIdFromAuthentication();
         keycloakAdminClientService.updatePassword(password.getPassword(), id);
+    }
+
+    private UserRes getUserRes(User user) {
+        UserRes userRes = new UserRes();
+        userRes.setId(user.getId());
+        userRes.setUsername(user.getUsername());
+        userRes.setFirstName(user.getFirstName());
+        userRes.setLastName(user.getLastName());
+        userRes.setDepartment(user.getDepartment());
+        userRes.setReferenceUser(user.getReferenceUser());
+        userRes.setEnabled(user.isEnabled());
+        userRes.setEmail(user.getEmail());
+        userRes.setPhoneNumber(user.getPhoneNumber());
+        userRes.setDocId(user.getDocument() != null ? user.getDocument().getId() : null);
+        return userRes;
     }
 
     private String getUsernameFromAuthentication() {

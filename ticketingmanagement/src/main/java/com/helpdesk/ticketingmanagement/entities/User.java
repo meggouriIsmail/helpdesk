@@ -29,6 +29,7 @@ public class User implements Serializable {
     private String lastName;
     private String referenceUser;
     @OneToOne
+    @JsonBackReference
     private Document document;
     private String status;
     private String post;

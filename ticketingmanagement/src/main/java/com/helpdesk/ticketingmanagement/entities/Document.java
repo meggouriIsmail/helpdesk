@@ -35,5 +35,6 @@ public class Document {
 	private Ticket ticket;
 
 	@OneToOne
+	@JsonBackReference
 	private User user;
 }

@@ -1,5 +1,6 @@
 package com.helpdesk.ticketingmanagement.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,5 +19,6 @@ public class Department {
     private Long id;
     private String name;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "department")
+    @JsonBackReference
     private List<User> users;
 }

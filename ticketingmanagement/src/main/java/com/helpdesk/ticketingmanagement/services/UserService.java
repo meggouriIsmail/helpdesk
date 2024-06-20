@@ -1,9 +1,6 @@
 package com.helpdesk.ticketingmanagement.services;
 
-import com.helpdesk.ticketingmanagement.dto.UserDto;
-import com.helpdesk.ticketingmanagement.dto.UserReqDto;
-import com.helpdesk.ticketingmanagement.dto.UserReqPasswordDto;
-import com.helpdesk.ticketingmanagement.dto.UserResDto;
+import com.helpdesk.ticketingmanagement.dto.*;
 import com.helpdesk.ticketingmanagement.entities.User;
 
 import java.util.List;
@@ -16,6 +13,8 @@ public interface UserService {
     User getUserById(Long id);
 
     List<User> getUsers();
+
+    List<UserRes> getAllUsers();
 
     void desactivateUser(Long userId);
 

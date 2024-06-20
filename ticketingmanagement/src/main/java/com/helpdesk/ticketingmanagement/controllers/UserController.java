@@ -1,9 +1,6 @@
 package com.helpdesk.ticketingmanagement.controllers;
 
-import com.helpdesk.ticketingmanagement.dto.UserDto;
-import com.helpdesk.ticketingmanagement.dto.UserReqDto;
-import com.helpdesk.ticketingmanagement.dto.UserReqPasswordDto;
-import com.helpdesk.ticketingmanagement.dto.UserResDto;
+import com.helpdesk.ticketingmanagement.dto.*;
 import com.helpdesk.ticketingmanagement.entities.User;
 import com.helpdesk.ticketingmanagement.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -61,8 +58,14 @@ public class UserController {
 
     @GetMapping()
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<User>> getUsers() {
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
+    }
+
+    @GetMapping("/")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<UserRes>> getAllUsers() {
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/auth")
