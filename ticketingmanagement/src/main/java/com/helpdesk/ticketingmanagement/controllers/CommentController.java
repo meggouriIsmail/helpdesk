@@ -1,6 +1,7 @@
 package com.helpdesk.ticketingmanagement.controllers;
 
 import com.helpdesk.ticketingmanagement.dto.CommentDto;
+import com.helpdesk.ticketingmanagement.dto.CommentResDto;
 import com.helpdesk.ticketingmanagement.entities.Comment;
 import com.helpdesk.ticketingmanagement.repositories.CommentRepository;
 import com.helpdesk.ticketingmanagement.services.CommentService;
@@ -18,23 +19,26 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
-    private final CommentRepository commentRepository;
 
-    public CommentController(CommentService commentService, CommentRepository commentRepository) {
+    public CommentController(CommentService commentService) {
         this.commentService = commentService;
-        this.commentRepository = commentRepository;
     }
 
-    @GetMapping
+    @GetMapping("/user/{username}")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<List<Comment>> getComments() {
-        return new ResponseEntity<>(commentRepository.findAll(), HttpStatus.FOUND);
+    public ResponseEntity<List<CommentResDto>> getComments(@PathVariable String username) {
+        return new ResponseEntity<>(commentService.getAllCommentsByUser(username), HttpStatus.FOUND);
+    }
+
+    @GetMapping("/{ticket_id}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<CommentResDto>> getComments(@PathVariable Long ticket_id) {
+        return new ResponseEntity<>(commentService.getAllCommentsByTicket(ticket_id), HttpStatus.FOUND);
     }
 
     @PostMapping("/{id}/new")
     @PreAuthorize("hasAuthority('USER')")
     public void addComment(@PathVariable Long id, @RequestBody CommentDto commentDto) {
-        // Save comment to the database (implementation not shown)
         commentService.addComment(id, commentDto);
     }
 }

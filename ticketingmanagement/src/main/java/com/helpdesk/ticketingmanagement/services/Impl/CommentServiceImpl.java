@@ -1,6 +1,8 @@
 package com.helpdesk.ticketingmanagement.services.Impl;
 
 import com.helpdesk.ticketingmanagement.dto.CommentDto;
+import com.helpdesk.ticketingmanagement.dto.CommentResDto;
+import com.helpdesk.ticketingmanagement.dto.UserResCommentDto;
 import com.helpdesk.ticketingmanagement.entities.Comment;
 import com.helpdesk.ticketingmanagement.entities.Ticket;
 import com.helpdesk.ticketingmanagement.entities.User;
@@ -13,6 +15,7 @@ import com.helpdesk.ticketingmanagement.services.CommentService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,5 +52,45 @@ public class CommentServiceImpl implements CommentService {
         Comment commentSaved = commentRepository.save(comment);
         rabbitTemplate.convertAndSend("commentQueue", commentSaved);
         ticketStatusProducer.sendCommentNotification(commentDto);
+    }
+
+    @Override
+    public List<CommentResDto> getAllCommentsByUser(String username) {
+        return commentRepository.findAllByAuthorUsername(username).stream().map(this::convertCommentToCommentResDto).toList();
+    }
+
+    @Override
+    public List<CommentResDto> getAllCommentsByTicket(Long ticket_id) {
+        return commentRepository.findAllByTicketId(ticket_id).stream().map(this::convertCommentToCommentResDto).toList();
+    }
+
+    private CommentResDto convertCommentToCommentResDto(Comment comment) {
+        CommentResDto commentResDto = new CommentResDto();
+        commentResDto.setId(comment.getId());
+        commentResDto.setComment(comment.getComment());
+        commentResDto.setStatus(comment.getStatus());
+        commentResDto.setTime(comment.getTime());
+        commentResDto.setTypeActivity(comment.getTypeActivity());
+        if (Optional.ofNullable(comment.getAuthor()).isPresent()){
+            commentResDto.setAuthor(getUserResCommentDto(comment.getAuthor()));
+        }
+        if (Optional.ofNullable(comment.getAssignedTo()).isPresent()){
+            commentResDto.setAssignedTo(getUserResCommentDto(comment.getAssignedTo()));
+        }
+        if (Optional.ofNullable(comment.getShared_with()).isPresent()){
+            List<UserResCommentDto> sharedWith = comment.getShared_with().stream().map(this::getUserResCommentDto).toList();
+            commentResDto.setShared_with(sharedWith);
+        }
+        return commentResDto;
+    }
+
+    private UserResCommentDto getUserResCommentDto(User user) {
+        return UserResCommentDto.builder()
+                .username(user.getUsername())
+                .docId(user.getDocument() != null ? user.getDocument().getId() : null)
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .id(user.getId())
+                .build();
     }
 }
