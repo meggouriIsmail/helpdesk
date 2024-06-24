@@ -34,7 +34,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @PreAuthorize("hasAuthority('HELPDESK')")
-    public User getUserById(@PathVariable Long userId) {
+    public UserResDto getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId);
     }
 

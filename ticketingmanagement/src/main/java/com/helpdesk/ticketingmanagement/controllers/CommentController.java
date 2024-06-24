@@ -27,13 +27,13 @@ public class CommentController {
     @GetMapping("/user/{username}")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<List<CommentResDto>> getComments(@PathVariable String username) {
-        return new ResponseEntity<>(commentService.getAllCommentsByUser(username), HttpStatus.FOUND);
+        return new ResponseEntity<>(commentService.getAllCommentsByUser(username), HttpStatus.OK);
     }
 
     @GetMapping("/{ticket_id}")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<List<CommentResDto>> getComments(@PathVariable Long ticket_id) {
-        return new ResponseEntity<>(commentService.getAllCommentsByTicket(ticket_id), HttpStatus.FOUND);
+        return new ResponseEntity<>(commentService.getAllCommentsByTicket(ticket_id), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/new")

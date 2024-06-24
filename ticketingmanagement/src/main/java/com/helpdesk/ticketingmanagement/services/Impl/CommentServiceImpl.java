@@ -15,6 +15,7 @@ import com.helpdesk.ticketingmanagement.services.CommentService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,7 @@ public class CommentServiceImpl implements CommentService {
         User author = optionalUser.get();
         Comment comment = new Comment();
         comment.setTicket(ticket);
+        comment.setTime(new Date());
         comment.setComment(commentDto.getComment());
         comment.setAuthor(author);
         comment.setTypeActivity(TypeActivity.COMMENT.value);

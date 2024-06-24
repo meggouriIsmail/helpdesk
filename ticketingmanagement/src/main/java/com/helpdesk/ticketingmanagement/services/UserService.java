@@ -10,7 +10,7 @@ public interface UserService {
 
     UserResDto getLoggedInUser();
 
-    User getUserById(Long id);
+    UserResDto getUserById(Long id);
 
     List<User> getUsers();
 

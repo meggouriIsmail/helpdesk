@@ -57,6 +57,10 @@ public class UserServiceImpl implements UserService {
     public UserResDto getLoggedInUser() {
         String username = getUsernameFromAuthentication();
         Optional<User> userOptional = userRepository.findByUsername(username);
+        return getUserResDto(userOptional);
+    }
+
+    private static UserResDto getUserResDto(Optional<User> userOptional) {
         User user;
         UserResDto userRes = new UserResDto();
         if (userOptional.isPresent()) {
@@ -83,8 +87,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow();
+    public UserResDto getUserById(Long id) {
+        return getUserResDto(userRepository.findById(id));
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.helpdesk.ticketingmanagement.services.Impl;
 import com.helpdesk.ticketingmanagement.dto.*;
 import com.helpdesk.ticketingmanagement.entities.*;
 import com.helpdesk.ticketingmanagement.enums.TypeActivity;
+import com.helpdesk.ticketingmanagement.listeners.TicketStatusProducer;
 import com.helpdesk.ticketingmanagement.repositories.CommentRepository;
 import com.helpdesk.ticketingmanagement.repositories.TicketRepository;
 import com.helpdesk.ticketingmanagement.repositories.TypeRepository;
@@ -26,13 +27,15 @@ public class TicketServiceImpl implements TicketService {
     private final TypeRepository typeRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final TicketStatusProducer ticketStatusProducer;
     private final RabbitTemplate rabbitTemplate;
 
-    public TicketServiceImpl(TicketRepository ticketRepository, TypeRepository typeRepository, UserRepository userRepository, CommentRepository commentRepository, RabbitTemplate rabbitTemplate) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TypeRepository typeRepository, TicketStatusProducer ticketStatusProducer, UserRepository userRepository, CommentRepository commentRepository, RabbitTemplate rabbitTemplate) {
         this.ticketRepository = ticketRepository;
         this.typeRepository = typeRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
+        this.ticketStatusProducer = ticketStatusProducer;
         this.rabbitTemplate = rabbitTemplate;
     }
 
@@ -62,7 +65,22 @@ public class TicketServiceImpl implements TicketService {
         ticket.setStatus("Open");
         ticket.setPriority(ticketDto.getPriority());
 
-        return getTicketResDto(ticketRepository.save(ticket));
+        Ticket savedTicket = ticketRepository.save(ticket);
+
+        Comment comment = new Comment();
+        CommentDto commentDto = new CommentDto();
+        commentDto.setAuthor(new UserNameDto(owner.get().getUsername()));
+        commentDto.setComment("New Ticket with reference: " + reference);
+        comment.setTime(new Date());
+        comment.setTicket(savedTicket);
+        comment.setComment(commentDto.getComment());
+        comment.setAuthor(owner.orElseThrow());
+        comment.setTypeActivity(TypeActivity.TICKET_CREATED.value);
+
+        Comment commentSaved = commentRepository.save(comment);
+        rabbitTemplate.convertAndSend("commentQueue", commentSaved);
+
+        return getTicketResDto(savedTicket);
     }
 
     @Override
@@ -201,6 +219,7 @@ public class TicketServiceImpl implements TicketService {
 
         rabbitTemplate.convertAndSend("commentQueue", saveComment);
 
+        assert ticket != null;
         return getTicketResDto(ticket);
     }
 
