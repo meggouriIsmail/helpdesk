@@ -2,6 +2,7 @@ package com.helpdesk.ticketingmanagement.services.Impl;
 
 import com.helpdesk.ticketingmanagement.dto.CommentDto;
 import com.helpdesk.ticketingmanagement.dto.CommentResDto;
+import com.helpdesk.ticketingmanagement.dto.CommentTicketResDto;
 import com.helpdesk.ticketingmanagement.dto.UserResCommentDto;
 import com.helpdesk.ticketingmanagement.entities.Comment;
 import com.helpdesk.ticketingmanagement.entities.Ticket;
@@ -73,6 +74,9 @@ public class CommentServiceImpl implements CommentService {
         commentResDto.setStatus(comment.getStatus());
         commentResDto.setTime(comment.getTime());
         commentResDto.setTypeActivity(comment.getTypeActivity());
+        if (Optional.ofNullable(comment.getTicket()).isPresent()) {
+            commentResDto.setTicket(new CommentTicketResDto(comment.getTicket().getId(), comment.getTicket().getReference()));
+        }
         if (Optional.ofNullable(comment.getAuthor()).isPresent()){
             commentResDto.setAuthor(getUserResCommentDto(comment.getAuthor()));
         }

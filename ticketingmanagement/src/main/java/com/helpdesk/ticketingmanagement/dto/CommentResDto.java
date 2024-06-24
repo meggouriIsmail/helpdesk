@@ -13,6 +13,7 @@ import java.util.List;
 public class CommentResDto {
     private Long id;
     private UserResCommentDto author;
+    private CommentTicketResDto ticket;
     private Date time;
     private String typeActivity;
     private String comment;
