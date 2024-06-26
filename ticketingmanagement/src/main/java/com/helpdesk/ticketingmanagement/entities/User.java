@@ -53,6 +53,10 @@ public class User implements Serializable {
     @JsonBackReference
     private List<Ticket> tickets;
 
+    @OneToMany
+    @JsonBackReference
+    private List<Ticket> favoriteTickets;
+
     @ManyToOne
     private Department department;
 }

@@ -10,4 +10,5 @@ import lombok.*;
 public class CommentTicketResDto {
     private Long id;
     private String reference;
+    private String title;
 }

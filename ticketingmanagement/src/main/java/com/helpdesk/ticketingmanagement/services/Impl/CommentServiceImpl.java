@@ -75,7 +75,7 @@ public class CommentServiceImpl implements CommentService {
         commentResDto.setTime(comment.getTime());
         commentResDto.setTypeActivity(comment.getTypeActivity());
         if (Optional.ofNullable(comment.getTicket()).isPresent()) {
-            commentResDto.setTicket(new CommentTicketResDto(comment.getTicket().getId(), comment.getTicket().getReference()));
+            commentResDto.setTicket(new CommentTicketResDto(comment.getTicket().getId(), comment.getTicket().getReference(), comment.getTicket().getTitle()));
         }
         if (Optional.ofNullable(comment.getAuthor()).isPresent()){
             commentResDto.setAuthor(getUserResCommentDto(comment.getAuthor()));

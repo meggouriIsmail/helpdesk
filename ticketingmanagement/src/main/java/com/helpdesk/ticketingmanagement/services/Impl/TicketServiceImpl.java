@@ -187,7 +187,7 @@ public class TicketServiceImpl implements TicketService {
         if (!oldStatus.equals(newStatus)) {
             assert ticket != null;
             ticketRepository.save(ticket);
-            Comment comment = createAndSaveComment(ticket, user, "Status changed to " + newStatus + ".", TypeActivity.STATUS_CHANGED);
+            Comment comment = createAndSaveComment(ticket, user, "Status changed to " + newStatus + ".", TypeActivity.STATUS_CHANGED, ticketStatusDto);
             rabbitTemplate.convertAndSend("commentQueue", comment);
         }
     }
@@ -240,7 +240,7 @@ public class TicketServiceImpl implements TicketService {
 
         User user = userRepository.findByUsername(username).orElse(null);
 
-        Comment comment = createAndSaveComment(ticket, user, "Assigned to updated.", TypeActivity.ASSIGNED_TO);
+        Comment comment = createAndSaveComment(ticket, user, "Assigned to updated.", TypeActivity.ASSIGNED_TO, null);
         rabbitTemplate.convertAndSend("commentQueue", comment);
         assert ticket != null;
         return getTicketResDto(ticket);
@@ -249,15 +249,19 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public TicketResDto updateIsFavourite(Long ticketId, IsFavoriteDto isFavoriteDto) {
         Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
-        if (ticketOptional.isPresent()) {
-            Ticket ticket = ticketOptional.get();
-            ticket.setFavorite(isFavoriteDto.isFavorite);
-            return getTicketResDto(ticket);
+        User user = userRepository.findByUsername(getUsernameFromAuthentication()).orElse(null);
+        if (ticketOptional.isPresent() && user != null) {
+            if (Objects.nonNull(user.getFavoriteTickets())) {
+                user.setFavoriteTickets(new ArrayList<>());
+            }
+            user.getFavoriteTickets().add(ticketOptional.get());
+            userRepository.save(user);
+            return getTicketResDto(ticketOptional.get());
         }
         return null;
     }
 
-    private Comment createAndSaveComment(Ticket ticket, User user, String commentText, TypeActivity typeActivity) {
+    private Comment createAndSaveComment(Ticket ticket, User user, String commentText, TypeActivity typeActivity, TicketStatusDto ticketStatusDto) {
         Comment comment = new Comment();
         comment.setTicket(ticket);
         comment.setAuthor(user);
@@ -267,6 +271,9 @@ public class TicketServiceImpl implements TicketService {
 
         if (typeActivity.equals(TypeActivity.STATUS_CHANGED)) {
             comment.setStatus(ticket.getStatus());
+            if (!ticketStatusDto.getExplication().isEmpty()) {
+                comment.setComment(ticketStatusDto.getExplication());
+            }
         } else if (typeActivity.equals(TypeActivity.ASSIGNED_TO)) {
             comment.setAssignedTo(ticket.getAssignedTo());
         }
