@@ -38,6 +38,13 @@ public class TicketController {
     public ResponseEntity<List<TicketResDto>> getAllTickets() {
         return new ResponseEntity<>(ticketService.getAllTickets(), HttpStatus.OK);
     }
+
+    @GetMapping("/favorite-tickets/{id}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<TicketResDto>> getFavouriteTickets(@PathVariable Long id) {
+        return new ResponseEntity<>(ticketService.getFavouriteTickets(id), HttpStatus.OK);
+    }
+
     @GetMapping("/tickets/{id}")
     @PreAuthorize("hasAuthority('HELPDESK')")
     public ResponseEntity<TicketResDto> getTicketById(@PathVariable Long id) {

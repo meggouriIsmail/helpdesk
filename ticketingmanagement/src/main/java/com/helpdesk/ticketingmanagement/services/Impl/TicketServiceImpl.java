@@ -27,15 +27,13 @@ public class TicketServiceImpl implements TicketService {
     private final TypeRepository typeRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final TicketStatusProducer ticketStatusProducer;
     private final RabbitTemplate rabbitTemplate;
 
-    public TicketServiceImpl(TicketRepository ticketRepository, TypeRepository typeRepository, TicketStatusProducer ticketStatusProducer, UserRepository userRepository, CommentRepository commentRepository, RabbitTemplate rabbitTemplate) {
+    public TicketServiceImpl(TicketRepository ticketRepository, TypeRepository typeRepository, UserRepository userRepository, CommentRepository commentRepository, RabbitTemplate rabbitTemplate) {
         this.ticketRepository = ticketRepository;
         this.typeRepository = typeRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
-        this.ticketStatusProducer = ticketStatusProducer;
         this.rabbitTemplate = rabbitTemplate;
     }
 
@@ -86,6 +84,15 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public List<TicketResDto> getAllTickets() {
         return ticketRepository.findAll().stream().map(TicketServiceImpl::getTicketResDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TicketResDto> getFavouriteTickets(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent() && Objects.nonNull(optionalUser.get().getFavoriteTickets())) {
+            return optionalUser.get().getFavoriteTickets().stream().map(TicketServiceImpl::getTicketResDto).collect(Collectors.toList());
+        }
+        return List.of();
     }
 
     @Override

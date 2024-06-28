@@ -10,9 +10,12 @@ public interface TicketService {
 
     List<TicketResDto> getAllTickets();
 
+    List<TicketResDto> getFavouriteTickets(Long userId);
+
     TicketResDto getTicketById(Long id);
 
     TicketResDto getTicketByUserAndId(String username, Long id);
+
     List<TicketResDto> getTicketsByUser(String username);
 
     void updateTicket(Long id, Ticket ticket);

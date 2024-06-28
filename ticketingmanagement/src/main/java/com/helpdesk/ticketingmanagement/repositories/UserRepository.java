@@ -1,4 +1,5 @@
 package com.helpdesk.ticketingmanagement.repositories;
+import com.helpdesk.ticketingmanagement.entities.Ticket;
 import com.helpdesk.ticketingmanagement.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
