@@ -26,5 +26,5 @@ public interface TicketService {
 
     TicketResDto updateAssignedTo(Long ticketId, UpdateAssignedToDto updateAssignedToDto);
 
-    TicketResDto updateIsFavourite(Long ticketId, IsFavoriteDto isFavoriteDto);
+    void updateIsFavourite(Long ticketId, IsFavoriteDto isFavoriteDto);
 }

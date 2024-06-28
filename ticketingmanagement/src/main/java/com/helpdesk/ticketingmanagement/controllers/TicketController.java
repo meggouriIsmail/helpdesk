@@ -85,8 +85,7 @@ public class TicketController {
 
     @PutMapping("/tickets/isFavorite/{ticketId}")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<TicketResDto> updateAssignedTo(@PathVariable Long ticketId, @RequestBody IsFavoriteDto isFavoriteDto) {
-        TicketResDto updatedTicket = ticketService.updateIsFavourite(ticketId, isFavoriteDto);
-        return ResponseEntity.ok(updatedTicket);
+    public void updateIsFavourite(@PathVariable Long ticketId, @RequestBody IsFavoriteDto isFavoriteDto) {
+        ticketService.updateIsFavourite(ticketId, isFavoriteDto);
     }
 }

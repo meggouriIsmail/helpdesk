@@ -19,7 +19,8 @@ import java.util.Set;
 @Getter
 @Setter
 public class Ticket implements Serializable {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String reference;
     private String description;
@@ -30,7 +31,6 @@ public class Ticket implements Serializable {
     private String status;
     private String priority;
     private String isResolved;
-    private boolean isFavorite;
     @CreationTimestamp
     private Date createdTime;
     @ManyToOne
@@ -47,4 +47,7 @@ public class Ticket implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticket", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonBackReference
     private Set<Document> documents;
+
+    @OneToOne
+    private FeedBack feedBack;
 }

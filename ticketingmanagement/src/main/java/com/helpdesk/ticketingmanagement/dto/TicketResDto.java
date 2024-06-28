@@ -21,7 +21,6 @@ public class TicketResDto {
     private String status;
     private String priority;
     private String isResolved;
-    private boolean isFavorite;
     private Date createdTime;
     private UserTicketResDto owner;
     private UserTicketResDto assignedTo;

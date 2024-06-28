@@ -115,7 +115,6 @@ public class TicketServiceImpl implements TicketService {
                 .priority(ticket.getPriority())
                 .title(ticket.getTitle())
                 .reference(ticket.getReference())
-                .isFavorite(ticket.isFavorite())
                 .type(ticket.getType())
                 .owner(UserTicketResDto.builder()
                         .id(ticket.getOwner().getId())
@@ -187,9 +186,7 @@ public class TicketServiceImpl implements TicketService {
             ticket.setStatus(newStatus);
         }
 
-        String username = getUsernameFromAuthentication();
-
-        User user = userRepository.findByUsername(username).orElse(null);
+        User user = userRepository.findByUsername(getUsernameFromAuthentication()).orElse(null);
 
         if (!oldStatus.equals(newStatus)) {
             assert ticket != null;
@@ -211,9 +208,7 @@ public class TicketServiceImpl implements TicketService {
             ticketRepository.save(ticket);
         }
 
-        String username = getUsernameFromAuthentication();
-
-        User user = userRepository.findByUsername(username).orElse(null);
+        User user = userRepository.findByUsername(getUsernameFromAuthentication()).orElse(null);
 
         Comment comment = new Comment();
         comment.setTicket(ticket);
@@ -243,9 +238,7 @@ public class TicketServiceImpl implements TicketService {
             }
         }
 
-        String username = getUsernameFromAuthentication();
-
-        User user = userRepository.findByUsername(username).orElse(null);
+        User user = userRepository.findByUsername(getUsernameFromAuthentication()).orElse(null);
 
         Comment comment = createAndSaveComment(ticket, user, "Assigned to updated.", TypeActivity.ASSIGNED_TO, null);
         rabbitTemplate.convertAndSend("commentQueue", comment);
@@ -254,16 +247,34 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public TicketResDto updateIsFavourite(Long ticketId, IsFavoriteDto isFavoriteDto) {
+    public void updateIsFavourite(Long ticketId, IsFavoriteDto isFavoriteDto) {
         Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
+        if (ticketOptional.isPresent()) {
+            if (isFavoriteDto.isFavorite) {
+                userRepository.save(Objects.requireNonNull(addFavourite(ticketOptional.get())));
+            } else {
+                userRepository.save(Objects.requireNonNull(removeFavourite(ticketOptional.get())));
+            }
+        }
+    }
+
+    private User addFavourite(Ticket ticket) {
         User user = userRepository.findByUsername(getUsernameFromAuthentication()).orElse(null);
-        if (ticketOptional.isPresent() && user != null) {
-            if (Objects.nonNull(user.getFavoriteTickets())) {
+        if (user != null) {
+            if (Objects.isNull(user.getFavoriteTickets())) {
                 user.setFavoriteTickets(new ArrayList<>());
             }
-            user.getFavoriteTickets().add(ticketOptional.get());
-            userRepository.save(user);
-            return getTicketResDto(ticketOptional.get());
+            user.getFavoriteTickets().add(ticket);
+            return user;
+        }
+        return null;
+    }
+
+    private User removeFavourite(Ticket ticket) {
+        User user = userRepository.findByUsername(getUsernameFromAuthentication()).orElse(null);
+        if (user != null) {
+            user.getFavoriteTickets().remove(ticket);
+            return user;
         }
         return null;
     }
