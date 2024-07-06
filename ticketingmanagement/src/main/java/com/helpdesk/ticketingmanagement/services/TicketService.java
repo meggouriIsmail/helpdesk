@@ -26,5 +26,7 @@ public interface TicketService {
 
     TicketResDto updateAssignedTo(Long ticketId, UpdateAssignedToDto updateAssignedToDto);
 
+    List<TicketResDto> findAllTicketsBySharedWithUsername(String username);
+
     void updateIsFavourite(Long ticketId, IsFavoriteDto isFavoriteDto);
 }

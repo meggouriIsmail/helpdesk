@@ -41,8 +41,7 @@ public class Ticket implements Serializable {
     @JoinColumn(name = "assignedTo")
     private User assignedTo;
 
-    @OneToMany
-    @JoinColumn(name = "sharedWith")
+    @ManyToMany
     private List<User> sharedWith;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticket", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonBackReference

@@ -39,6 +39,12 @@ public class TicketController {
         return new ResponseEntity<>(ticketService.getAllTickets(), HttpStatus.OK);
     }
 
+    @GetMapping("/tickets/shared-with/{username}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<List<TicketResDto>> getAllTicketsSharedWith(@PathVariable String username) {
+        return new ResponseEntity<>(ticketService.findAllTicketsBySharedWithUsername(username), HttpStatus.OK);
+    }
+
     @GetMapping("/favorite-tickets/{id}")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<List<TicketResDto>> getFavouriteTickets(@PathVariable Long id) {

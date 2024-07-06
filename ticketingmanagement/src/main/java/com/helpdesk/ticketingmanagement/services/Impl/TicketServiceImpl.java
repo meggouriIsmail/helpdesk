@@ -12,6 +12,8 @@ import com.helpdesk.ticketingmanagement.services.TicketService;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -244,6 +246,12 @@ public class TicketServiceImpl implements TicketService {
         rabbitTemplate.convertAndSend("commentQueue", comment);
         assert ticket != null;
         return getTicketResDto(ticket);
+    }
+
+    @Override
+    public List<TicketResDto> findAllTicketsBySharedWithUsername(String username) {
+        Optional<List<Ticket>> ticketsBySharedWithContainingUsername = ticketRepository.findAllTicketsBySharedWithUsername(username);
+        return ticketsBySharedWithContainingUsername.map(tickets -> tickets.stream().map(TicketServiceImpl::getTicketResDto).toList()).orElseGet(List::of);
     }
 
     @Override
